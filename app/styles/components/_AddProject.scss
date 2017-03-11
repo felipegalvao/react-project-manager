@@ -1,0 +1,23 @@
+.col-add-project {
+    float: none;
+    margin: 0 auto 20px;
+}
+
+.card-add-project {
+    i {
+        font-size: 3rem;
+    }
+}
+
+.addproject-buttons-container {
+    text-align: left;
+    button {
+        margin: 5px;
+    }
+}
+
+.showaddproject-container {
+    * {
+        cursor: pointer;
+    }
+}

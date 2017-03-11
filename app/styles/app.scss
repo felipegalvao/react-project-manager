@@ -1,0 +1,29 @@
+@import "base/variables";
+
+@import "components/ProjectListItem";
+@import "components/AddProject";
+
+body {
+    background-color: $background-bright;
+}
+
+.h2-project-list {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.hr-title {
+    border-color: $h2-separator-gray;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: -1;
+}
+
+.h2-title-container {
+    position: relative;
+    .span-project-list {
+        background-color: $background-bright;
+        padding: 0 20px;
+    }
+}
