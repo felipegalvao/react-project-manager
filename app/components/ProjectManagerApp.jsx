@@ -4,13 +4,13 @@ import Nav from './Nav.jsx';
 
 class ProjectManagerApp extends Component {
     constructor(props) {
-        super(props);
-    }
+        super(props);        
+    }    
 
     render() {
         return (
             <div>
-                <Nav/>
+                <Nav/>                
                 {this.props.children}
             </div>
         );

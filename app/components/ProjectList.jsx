@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ProjectListItem from './ProjectListItem.jsx';
+import {connect} from 'react-redux';
 
 class ProjectList extends Component {
     render() {
@@ -21,4 +22,8 @@ class ProjectList extends Component {
     }
 }
 
-export default ProjectList;
+export default connect(
+    (state) => {
+        return state;
+    }
+)(ProjectList);

@@ -7,28 +7,10 @@ import AddProject from './AddProject.jsx';
 
 class MainDashboard extends Component {
     constructor(props) {
-        super(props)
-
-        this.state = {
-            projects: []
-        }
-    }
-
-    handleAddProject = (projectName) => {
-        this.setState({
-            projects: [
-                ...this.state.projects,
-                {
-                    id: uuid(),
-                    name: projectName
-                }
-            ]
-        })
-    }
+        super(props)        
+    }    
 
     render() {
-        var {projects} = this.state;
-
         return (
             <div className="container">
                 <h1>React Project Manager</h1>
@@ -36,8 +18,8 @@ class MainDashboard extends Component {
                     <h2 className="h2-project-list"><span className="span-project-list">Projects</span></h2>
                     <hr className="hr-title" />
                 </div>
-                <AddProject onAddProject={this.handleAddProject} />
-                <ProjectList projects={projects}/>
+                <AddProject/>
+                <ProjectList/>
             </div>
         );
     }

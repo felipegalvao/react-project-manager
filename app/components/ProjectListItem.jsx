@@ -9,7 +9,7 @@ class ProjectListItem extends Component {
         return (
             <div className="col-sm-4">
                 <Link to={link}>
-                    <div className="card-project">
+                    <div className="card-element">
                         <h3>{name}</h3>
                         <p>Project 1 description</p>
                         <br/>

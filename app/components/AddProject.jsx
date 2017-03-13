@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import {Button, FormGroup, FormControl} from 'react-bootstrap';
+import {connect} from 'react-redux';
+var uuid = require('node-uuid');
+
+import * as actions from '../actions/actions.jsx';
 
 class AddProject extends Component {
     constructor(props) {
@@ -8,10 +12,6 @@ class AddProject extends Component {
         this.state = {
             addProjectVisible: false
         };
-    }
-    
-    handleSubmit = (e) => {
-        e.preventDefault();
     }
 
     handleCancelAddProject = () => {
@@ -23,10 +23,15 @@ class AddProject extends Component {
     }
 
     handleAddProject = (e) => {
+        var {dispatch} = this.props;
         e.preventDefault();
         var projectName = this.projectNameInput.value;
+        var project = {
+            id: uuid(),
+            name: projectName
+        };
         this.setState({addProjectVisible: false});
-        this.props.onAddProject(projectName);
+        dispatch(actions.addProject(project));
     }
 
     render() {
@@ -61,7 +66,7 @@ class AddProject extends Component {
         return (
             <div className="row">
                 <div className="col-sm-4 col-add-project">
-                    <div className="card-project card-add-project text-center">
+                    <div className="card-element card-add-project text-center">
                         {renderAddItem()}
                     </div>                    
                 </div>
@@ -70,4 +75,4 @@ class AddProject extends Component {
     }
 }
 
-export default AddProject;
+export default connect()(AddProject);
