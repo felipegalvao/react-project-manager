@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import ProjectListItem from './ProjectListItem.jsx';
 import {connect} from 'react-redux';
+
+import ProjectListItem from './ProjectListItem.jsx';
 
 class ProjectList extends Component {
     render() {

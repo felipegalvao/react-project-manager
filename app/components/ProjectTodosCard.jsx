@@ -4,7 +4,7 @@ import {Link} from 'react-router';
 class ProjectTodosCard extends Component {   
     render() {
         var {id} = this.props;
-        var link = id + "/todos";
+        var link = "/projects/" + id + "/todos";
 
         return (
             <div>

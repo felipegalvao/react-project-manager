@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
+
+import ProjectTodosList from './ProjectTodosList.jsx';
+import AddProjectTodo from './AddProjectTodo.jsx';
 
 class ProjectTodos extends Component {
     render() {
         return (
             <div>
-                <p>Project Todos</p>
+                <h3>Project Todos</h3>
+                <AddProjectTodo/>
+                <ProjectTodosList/>                
             </div>
         );
     }
 }
 
-export default ProjectTodos;
+export default connect()(ProjectTodos);

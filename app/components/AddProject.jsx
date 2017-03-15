@@ -28,7 +28,8 @@ class AddProject extends Component {
         var projectName = this.projectNameInput.value;
         var project = {
             id: uuid(),
-            name: projectName
+            name: projectName,
+            todos: []
         };
         this.setState({addProjectVisible: false});
         dispatch(actions.addProject(project));

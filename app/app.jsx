@@ -20,7 +20,7 @@ ReactDOM.render(
             <Route path="/" component={ProjectManagerApp}>
                 <IndexRoute component={MainDashboard} />
                 <Route path='/projects/:id' component={ProjectView}>
-                    <Route path='/todos' component={ProjectTodos} />
+                    <Route path='/projects/:id/todos' component={ProjectTodos} />
                     <IndexRoute component={ProjectPanel} />                    
                 </Route>                
                 <Route path='*' component={NotFound} />            
