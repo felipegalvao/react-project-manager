@@ -1,6 +1,6 @@
-export var filterProjects = (projects, id) => {
+export var filterProject = (projects, id) => {
     var project = projects.filter((project) => {
-        return project.id === this.props.params.id;
+        return project.id === id;
     })[0];
 
     return project

@@ -9,8 +9,8 @@ class ProjectTodos extends Component {
         return (
             <div>
                 <h3>Project Todos</h3>
-                <AddProjectTodo/>
-                <ProjectTodosList/>                
+                <AddProjectTodo id={this.props.params.id} />
+                <ProjectTodosList id={this.props.params.id} />
             </div>
         );
     }

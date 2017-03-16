@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
+import {filterProject} from '../utils/utils.js';
+
 class ProjectView extends Component {
     constructor(props) {
         super(props);
@@ -8,9 +10,7 @@ class ProjectView extends Component {
     
     render() {
         var {projects} = this.props;
-        var project = projects.filter((project) => {
-            return project.id === this.props.params.id;
-        })[0];
+        var project = filterProject(projects, this.props.params.id);
 
         return (
             <div className="container">

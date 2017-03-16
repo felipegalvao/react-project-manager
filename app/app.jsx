@@ -1,5 +1,5 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {Router, Route, Link, IndexRoute, hashHistory, browserHistory} from 'react-router'
 

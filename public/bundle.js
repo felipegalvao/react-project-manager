@@ -31946,6 +31946,14 @@ module.exports = function(module) {
 "use strict";
 
 
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(25);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
 var _reactRedux = __webpack_require__(111);
 
 var _reactRouter = __webpack_require__(112);
@@ -31976,31 +31984,28 @@ var _ProjectPanel2 = _interopRequireDefault(_ProjectPanel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var React = __webpack_require__(1);
-var ReactDOM = __webpack_require__(25);
-
 var store = __webpack_require__(326).configure();
 
 // Load app CSS
 __webpack_require__(672);
 
-ReactDOM.render(React.createElement(
+_reactDom2.default.render(_react2.default.createElement(
     _reactRedux.Provider,
     { store: store },
-    React.createElement(
+    _react2.default.createElement(
         _reactRouter.Router,
         { history: _reactRouter.browserHistory },
-        React.createElement(
+        _react2.default.createElement(
             _reactRouter.Route,
             { path: '/', component: _ProjectManagerApp2.default },
-            React.createElement(_reactRouter.IndexRoute, { component: _MainDashboard2.default }),
-            React.createElement(
+            _react2.default.createElement(_reactRouter.IndexRoute, { component: _MainDashboard2.default }),
+            _react2.default.createElement(
                 _reactRouter.Route,
                 { path: '/projects/:id', component: _ProjectView2.default },
-                React.createElement(_reactRouter.Route, { path: '/projects/:id/todos', component: _ProjectTodos2.default }),
-                React.createElement(_reactRouter.IndexRoute, { component: _ProjectPanel2.default })
+                _react2.default.createElement(_reactRouter.Route, { path: '/projects/:id/todos', component: _ProjectTodos2.default }),
+                _react2.default.createElement(_reactRouter.IndexRoute, { component: _ProjectPanel2.default })
             ),
-            React.createElement(_reactRouter.Route, { path: '*', component: _NotFound2.default })
+            _react2.default.createElement(_reactRouter.Route, { path: '*', component: _NotFound2.default })
         )
     )
 ), document.getElementById('app'));
@@ -33018,6 +33023,15 @@ var addProject = exports.addProject = function addProject(project) {
     };
 };
 
+var addProjectTodo = exports.addProjectTodo = function addProjectTodo(projectId, todo) {
+    console.log("add todo action dispatched");
+    return {
+        type: 'ADD_PROJECT_TODO',
+        projectId: projectId,
+        todo: todo
+    };
+};
+
 /***/ }),
 /* 314 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -33034,6 +33048,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__(25);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactBootstrap = __webpack_require__(249);
 
@@ -33092,6 +33110,15 @@ var AddProject = function (_Component) {
     }
 
     _createClass(AddProject, [{
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate(prevProps, prevState) {
+            var projectNameInput = _reactDom2.default.findDOMNode(this.projectNameInput);
+
+            if (projectNameInput !== null) {
+                _reactDom2.default.findDOMNode(this.projectNameInput).focus();
+            }
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
@@ -33677,8 +33704,8 @@ var ProjectTodos = function (_Component) {
                     null,
                     'Project Todos'
                 ),
-                _react2.default.createElement(_AddProjectTodo2.default, null),
-                _react2.default.createElement(_ProjectTodosList2.default, null)
+                _react2.default.createElement(_AddProjectTodo2.default, { id: this.props.params.id }),
+                _react2.default.createElement(_ProjectTodosList2.default, { id: this.props.params.id })
             );
         }
     }]);
@@ -33779,6 +33806,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(111);
 
+var _utils = __webpack_require__(685);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -33799,13 +33828,9 @@ var ProjectView = function (_Component) {
     _createClass(ProjectView, [{
         key: 'render',
         value: function render() {
-            var _this2 = this;
-
             var projects = this.props.projects;
 
-            var project = projects.filter(function (project) {
-                return project.id === _this2.props.params.id;
-            })[0];
+            var project = (0, _utils.filterProject)(projects, this.props.params.id);
 
             return _react2.default.createElement(
                 'div',
@@ -33846,9 +33871,9 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var uuid = __webpack_require__(143);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var projectsReducer = exports.projectsReducer = function projectsReducer() {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
@@ -33856,10 +33881,17 @@ var projectsReducer = exports.projectsReducer = function projectsReducer() {
 
     switch (action.type) {
         case 'ADD_PROJECT':
-            return [].concat(_toConsumableArray(state), [{
-                id: action.project.id,
-                name: action.project.name
-            }]);
+            return [].concat(_toConsumableArray(state), [action.project]);
+        case 'ADD_PROJECT_TODO':
+            return state.map(function (project) {
+                if (project.id === action.projectId) {
+                    return _extends({}, project, {
+                        todos: [].concat(_toConsumableArray(project.todos), [action.todo])
+                    });
+                } else {
+                    return project;
+                }
+            });
         default:
             return state;
     }
@@ -70156,9 +70188,9 @@ module.exports = __webpack_require__(302);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var filterProjects = exports.filterProjects = function filterProjects(projects, id) {
+var filterProject = exports.filterProject = function filterProject(projects, id) {
     var project = projects.filter(function (project) {
-        return project.id === undefined.props.params.id;
+        return project.id === id;
     })[0];
 
     return project;
@@ -70181,6 +70213,16 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = __webpack_require__(111);
+
+var _reactBootstrap = __webpack_require__(249);
+
+var _actions = __webpack_require__(313);
+
+var actions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -70189,27 +70231,67 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var uuid = __webpack_require__(143);
+
 var AddProjectTodo = function (_Component) {
     _inherits(AddProjectTodo, _Component);
 
     function AddProjectTodo() {
+        var _ref;
+
+        var _temp, _this, _ret;
+
         _classCallCheck(this, AddProjectTodo);
 
-        return _possibleConstructorReturn(this, (AddProjectTodo.__proto__ || Object.getPrototypeOf(AddProjectTodo)).apply(this, arguments));
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = AddProjectTodo.__proto__ || Object.getPrototypeOf(AddProjectTodo)).call.apply(_ref, [this].concat(args))), _this), _this.handleAddProjectTodo = function (e) {
+            var dispatch = _this.props.dispatch;
+
+            e.preventDefault();
+            var todoDescription = _this.projectTodoDescription.value;
+            _this.projectTodoDescription.value = "";
+
+            var todo = {
+                id: uuid(),
+                description: todoDescription
+            };
+
+            dispatch(actions.addProjectTodo(_this.props.id, todo));
+        }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 
     _createClass(AddProjectTodo, [{
-        key: "render",
+        key: 'render',
         value: function render() {
+            var _this2 = this;
+
             return _react2.default.createElement(
-                "div",
+                'div',
                 null,
                 _react2.default.createElement(
-                    "p",
-                    null,
-                    "Add Todo"
-                ),
-                _react2.default.createElement("input", { type: "text" })
+                    'form',
+                    { onSubmit: this.handleAddProjectTodo },
+                    _react2.default.createElement(
+                        _reactBootstrap.FormGroup,
+                        null,
+                        _react2.default.createElement(_reactBootstrap.FormControl, {
+                            type: 'text',
+                            placeholder: 'Enter your To-Do',
+                            id: 'projectTodoDescription',
+                            inputRef: function inputRef(ref) {
+                                _this2.projectTodoDescription = ref;
+                            }
+                        }),
+                        _react2.default.createElement(
+                            _reactBootstrap.Button,
+                            { type: 'submit', bsStyle: 'success' },
+                            'Add To-Do'
+                        )
+                    )
+                )
             );
         }
     }]);
@@ -70217,7 +70299,7 @@ var AddProjectTodo = function (_Component) {
     return AddProjectTodo;
 }(_react.Component);
 
-exports.default = AddProjectTodo;
+exports.default = (0, _reactRedux.connect)()(AddProjectTodo);
 
 /***/ }),
 /* 687 */
@@ -70230,6 +70312,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -70239,6 +70323,10 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRedux = __webpack_require__(111);
 
 var _utils = __webpack_require__(685);
+
+var _ProjectTodoItem = __webpack_require__(688);
+
+var _ProjectTodoItem2 = _interopRequireDefault(_ProjectTodoItem);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -70260,7 +70348,31 @@ var ProjectTodosList = function (_Component) {
     _createClass(ProjectTodosList, [{
         key: 'render',
         value: function render() {
-            return _react2.default.createElement('div', null);
+            var projects = this.props.projects;
+
+            var project = (0, _utils.filterProject)(projects, this.props.id);
+
+            var renderProjectTodoList = function renderProjectTodoList() {
+                console.log(project.todos);
+                if (project.todos.length === 0) {
+                    return _react2.default.createElement(
+                        'p',
+                        null,
+                        'This project still doesn\'t have any To-Do'
+                    );
+                } else {
+                    console.log('aabfcdf');
+                    return project.todos.map(function (todo) {
+                        return _react2.default.createElement(_ProjectTodoItem2.default, _extends({ key: todo.id }, todo));
+                    });
+                }
+            };
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                renderProjectTodoList()
+            );
         }
     }]);
 
@@ -70270,6 +70382,65 @@ var ProjectTodosList = function (_Component) {
 exports.default = (0, _reactRedux.connect)(function (state) {
     return state;
 })(ProjectTodosList);
+
+/***/ }),
+/* 688 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ProjectTodoItem = function (_Component) {
+    _inherits(ProjectTodoItem, _Component);
+
+    function ProjectTodoItem() {
+        _classCallCheck(this, ProjectTodoItem);
+
+        return _possibleConstructorReturn(this, (ProjectTodoItem.__proto__ || Object.getPrototypeOf(ProjectTodoItem)).apply(this, arguments));
+    }
+
+    _createClass(ProjectTodoItem, [{
+        key: 'render',
+        value: function render() {
+            var _props = this.props,
+                id = _props.id,
+                description = _props.description;
+
+
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    description
+                )
+            );
+        }
+    }]);
+
+    return ProjectTodoItem;
+}(_react.Component);
+
+exports.default = ProjectTodoItem;
 
 /***/ })
 /******/ ]);

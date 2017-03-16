@@ -1,15 +1,26 @@
-var uuid = require('node-uuid');
-
 export var projectsReducer = (state = [], action) => {
     switch (action.type) {
         case 'ADD_PROJECT':
             return [
                 ...state,
-                {
-                    id: action.project.id,
-                    name: action.project.name
-                }
+                action.project
             ];
+        case 'ADD_PROJECT_TODO':
+            return state.map((project) => {
+                if (project.id === action.projectId) {
+                    return (
+                        {
+                            ...project,
+                            todos: [
+                                ...project.todos,
+                                action.todo
+                            ]
+                        }
+                    )
+                } else {
+                    return project;
+                }
+            });
         default:
             return state;
     }

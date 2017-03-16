@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import {Button, FormGroup, FormControl} from 'react-bootstrap';
 import {connect} from 'react-redux';
 var uuid = require('node-uuid');
@@ -14,13 +15,21 @@ class AddProject extends Component {
         };
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        var projectNameInput = ReactDOM.findDOMNode(this.projectNameInput)
+
+        if (projectNameInput !== null) {
+            ReactDOM.findDOMNode(this.projectNameInput).focus();
+        }        
+    }
+
     handleCancelAddProject = () => {
-        this.setState({addProjectVisible: false});
+        this.setState({addProjectVisible: false});        
     }
 
     handleShowAddProject = () => {
-        this.setState({addProjectVisible: true});
-    }
+        this.setState({addProjectVisible: true});        
+    }    
 
     handleAddProject = (e) => {
         var {dispatch} = this.props;
