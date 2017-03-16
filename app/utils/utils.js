@@ -5,3 +5,9 @@ export var filterProject = (projects, id) => {
 
     return project
 }
+
+export var filterTodos = (todos, projectId) => {
+    var filteredTodos = todos.filter((todo) => {
+        return todo.projectId === projectId;
+    })
+}

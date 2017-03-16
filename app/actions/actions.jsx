@@ -5,11 +5,17 @@ export var addProject = (project) => {
     }
 }
 
-export var addProjectTodo = (projectId, todo) => {
-    console.log("add todo action dispatched");
+export var addProjectTodo = (todo) => {    
     return {
-        type: 'ADD_PROJECT_TODO',
-        projectId,
+        type: 'ADD_PROJECT_TODO',        
         todo
+    }
+}
+
+export var toggleProjectTodo = (projectId, todoId) => {
+    return {
+        type: 'TOGGLE_PROJECT_TODO',
+        projectId,
+        todoId
     }
 }

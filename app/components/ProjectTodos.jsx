@@ -8,9 +8,13 @@ class ProjectTodos extends Component {
     render() {
         return (
             <div>
-                <h3>Project Todos</h3>
-                <AddProjectTodo id={this.props.params.id} />
-                <ProjectTodosList id={this.props.params.id} />
+                <div className="row row-project-todos">
+                    <div className="col-sm-6 col-sm-offset-3 col-todos">
+                        <h3>Project Todos</h3>
+                        <AddProjectTodo id={this.props.params.id} />
+                        <ProjectTodosList id={this.props.params.id} />
+                    </div>
+                </div>                
             </div>
         );
     }

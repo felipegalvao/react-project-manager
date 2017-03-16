@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {Button, FormGroup, FormControl} from 'react-bootstrap';
+import {Button, FormGroup, FormControl, Form} from 'react-bootstrap';
 var uuid = require('node-uuid');
 
 import * as actions from '../actions/actions.jsx';
@@ -14,27 +14,30 @@ class AddProjectTodo extends Component {
 
         var todo = {
             id: uuid(),
+            projectId: this.props.id,
             description: todoDescription
         }
 
-        dispatch(actions.addProjectTodo(this.props.id, todo));
+        dispatch(actions.addProjectTodo(todo));
     }
 
     render() {
         return (
-            <div>
+            <div>                
                 <form onSubmit={this.handleAddProjectTodo}>
-                    <FormGroup>
-                        <FormControl
-                            type="text"                                
-                            placeholder="Enter your To-Do" 
-                            id="projectTodoDescription"
-                            inputRef={ref => { this.projectTodoDescription = ref; }}
-                        />
-                        <Button type="submit" bsStyle="success">Add To-Do</Button>
-                    </FormGroup>                            
+                    <Form inline>
+                        <FormGroup>
+                            <FormControl
+                                type="text"                                
+                                placeholder="Enter your To-Do" 
+                                id="projectTodoDescription"
+                                inputRef={ref => { this.projectTodoDescription = ref; }}
+                            />
+                            <Button type="submit" bsStyle="success">Add To-Do</Button>
+                        </FormGroup>
+                    </Form>
                 </form>
-            </div>
+            </div>                                    
         );
     }
 }

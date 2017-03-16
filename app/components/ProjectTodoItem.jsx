@@ -1,15 +1,26 @@
 import React, { Component } from 'react';
+import {Checkbox} from 'react-bootstrap';
+import {connect} from 'react-redux'
 
-class ProjectTodoItem extends Component {
+import * as actions from '../actions/actions.jsx';
+
+class ProjectTodoItem extends Component {    
+    handleToggleTodo = () => {
+        var {dispatch} = this.props;
+        // dispatch(actions.)
+    }
+
     render() {
         var {id, description} = this.props;
         
         return (
-            <div>
-                <p>{description}</p>
+            <div className="project-todo-item">
+                <Checkbox inline>
+                    {description}
+                </Checkbox>
             </div>
         );
     }
 }
 
-export default ProjectTodoItem;
+export default connect()(ProjectTodoItem);

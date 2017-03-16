@@ -3,9 +3,13 @@
 @import "components/ProjectListItem";
 @import "components/AddProject";
 @import "components/ProjectView";
+@import "components/ProjectTodoItem";
+@import "components/ProjectTodos";
+@import "components/AddProjectTodo";
 
 body {
     background-color: $background-bright;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .h2-project-list {
@@ -21,9 +25,9 @@ body {
     z-index: -1;
 }
 
-.h2-title-container {
+.title-with-divider-container {
     position: relative;
-    .span-project-list {
+    .span-title-with-divider {
         background-color: $background-bright;
         padding: 0 20px;
     }

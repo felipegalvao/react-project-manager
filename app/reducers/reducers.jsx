@@ -4,23 +4,21 @@ export var projectsReducer = (state = [], action) => {
             return [
                 ...state,
                 action.project
-            ];
+            ];        
+        default:
+            return state;
+    }
+}
+
+export var todosReducer = (state = [], action) => {
+    switch (action.type) {
         case 'ADD_PROJECT_TODO':
-            return state.map((project) => {
-                if (project.id === action.projectId) {
-                    return (
-                        {
-                            ...project,
-                            todos: [
-                                ...project.todos,
-                                action.todo
-                            ]
-                        }
-                    )
-                } else {
-                    return project;
-                }
-            });
+            return [
+                ...state,
+                action.todo
+            ]             
+        // case 'TOGGLE_PROJECT_TODO':
+        //     return 
         default:
             return state;
     }

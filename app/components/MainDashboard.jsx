@@ -14,8 +14,8 @@ class MainDashboard extends Component {
         return (
             <div className="container">
                 <h1>React Project Manager</h1>
-                <div className="h2-title-container">
-                    <h2 className="h2-project-list"><span className="span-project-list">Projects</span></h2>
+                <div className="title-with-divider-container">
+                    <h2 className="h2-project-list title-with-divider"><span className="span-title-with-divider">Projects</span></h2>
                     <hr className="hr-title" />
                 </div>
                 <AddProject/>
