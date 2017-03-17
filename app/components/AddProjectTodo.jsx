@@ -15,7 +15,9 @@ class AddProjectTodo extends Component {
         var todo = {
             id: uuid(),
             projectId: this.props.id,
-            description: todoDescription
+            description: todoDescription,
+            completed: false,
+            dueDate: null
         }
 
         dispatch(actions.addProjectTodo(todo));
@@ -23,20 +25,18 @@ class AddProjectTodo extends Component {
 
     render() {
         return (
-            <div>                
-                <form onSubmit={this.handleAddProjectTodo}>
-                    <Form inline>
-                        <FormGroup>
-                            <FormControl
-                                type="text"                                
-                                placeholder="Enter your To-Do" 
-                                id="projectTodoDescription"
-                                inputRef={ref => { this.projectTodoDescription = ref; }}
-                            />
-                            <Button type="submit" bsStyle="success">Add To-Do</Button>
-                        </FormGroup>
-                    </Form>
-                </form>
+            <div>                                
+                <Form inline onSubmit={this.handleAddProjectTodo}>
+                    <FormGroup>
+                        <FormControl
+                            type="text"                                
+                            placeholder="Enter your To-Do" 
+                            id="projectTodoDescription"
+                            inputRef={ref => { this.projectTodoDescription = ref; }}
+                        />
+                        <Button type="submit" bsStyle="success">Add To-Do</Button>
+                    </FormGroup>
+                </Form>                
             </div>                                    
         );
     }

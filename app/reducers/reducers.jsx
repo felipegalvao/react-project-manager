@@ -17,8 +17,30 @@ export var todosReducer = (state = [], action) => {
                 ...state,
                 action.todo
             ]             
-        // case 'TOGGLE_PROJECT_TODO':
-        //     return 
+        case 'TOGGLE_PROJECT_TODO':
+            return state.map((todo) => {
+                if (todo.id === action.todoId) {
+                    var newTodoCompletedStatus = !todo.completed;
+
+                    return {
+                        ...todo,
+                        completed: newTodoCompletedStatus
+                    };
+                } else {
+                    return todo;
+                }
+            })
+        case 'SET_PROJECT_TODO_DUE_DATE':
+            return state.map((todo) => {
+                if (todo.id === action.todoId) {
+                    return {
+                        ...todo,
+                        dueDate: action.todoDueDate
+                    };
+                } else {
+                    return todo;
+                }
+            })
         default:
             return state;
     }

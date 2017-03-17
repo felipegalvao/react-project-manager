@@ -12,10 +12,17 @@ export var addProjectTodo = (todo) => {
     }
 }
 
-export var toggleProjectTodo = (projectId, todoId) => {
+export var toggleProjectTodo = (todoId) => {    
     return {
-        type: 'TOGGLE_PROJECT_TODO',
-        projectId,
+        type: 'TOGGLE_PROJECT_TODO',        
         todoId
+    }
+}
+
+export var setProjectTodoDueDate = (todoId, todoDueDate) => {
+    return {
+        type: 'SET_PROJECT_TODO_DUE_DATE',
+        todoId,
+        todoDueDate
     }
 }
