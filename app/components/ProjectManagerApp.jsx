@@ -10,8 +10,10 @@ class ProjectManagerApp extends Component {
     render() {
         return (
             <div>
-                <Nav/>                
-                {this.props.children}
+                <Nav/>
+                <div className="main-container">
+                    {this.props.children}
+                </div>
             </div>
         );
     }

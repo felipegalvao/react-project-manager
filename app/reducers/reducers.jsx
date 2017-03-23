@@ -45,3 +45,27 @@ export var todosReducer = (state = [], action) => {
             return state;
     }
 }
+
+export var messagesReducer = (state = [], action) => {
+    switch (action.type) {
+        case 'ADD_PROJECT_MESSAGE':
+            return [
+                ...state,
+                action.message
+            ]
+        default:
+            return state;
+    }
+}
+
+export var eventsReducer = (state = [], action) => {
+    switch (action.type) {
+        case 'ADD_PROJECT_EVENT':
+            return [
+                ...state,
+                action.event
+            ]
+        default:
+            return state;
+    }
+}

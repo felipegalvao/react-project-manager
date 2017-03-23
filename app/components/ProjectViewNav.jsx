@@ -10,7 +10,7 @@ class ProjectViewNav extends Component {
 
         return (
             <div className="row row-project-nav">
-                <div className="col-sm-2">
+                <div className="col-sm-2 col-sm-offset-3">
                     <div className="sm-card-projectview">
                         <Link to={baseLink + "/todos"}>
                             <p>Todos</p>

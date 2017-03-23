@@ -10,6 +10,7 @@ import ProjectView from './components/ProjectView.jsx';
 import ProjectTodos from './components/ProjectTodos.jsx';
 import ProjectPanel from './components/ProjectPanel.jsx';
 import ProjectMessageBoard from './components/ProjectMessageBoard.jsx';
+import ProjectEvents from './components/ProjectEvents.jsx';
 var store = require('./store/configureStore.jsx').configure();
 
 // Load app CSS
@@ -17,12 +18,13 @@ require('style-loader!css-loader!sass-loader!./styles/app.scss');
 
 ReactDOM.render(
     <Provider store={store}>
-        <Router history={browserHistory}>
+        <Router history={hashHistory}>
             <Route path="/" component={ProjectManagerApp}>
                 <IndexRoute component={MainDashboard} />
                 <Route path='/projects/:id' component={ProjectView}>
                     <Route path='/projects/:id/todos' component={ProjectTodos} />
                     <Route path='/projects/:id/messageboard' component={ProjectMessageBoard} />
+                    <Route path='/projects/:id/events' component={ProjectEvents} />
                     <IndexRoute component={ProjectPanel} />                    
                 </Route>                
                 <Route path='*' component={NotFound} />            

@@ -31,7 +31,8 @@ class AddProjectTodo extends Component {
                         <FormControl
                             type="text"                                
                             placeholder="Enter your To-Do" 
-                            id="projectTodoDescription"
+                            id="projectTodoDescription" 
+                            required 
                             inputRef={ref => { this.projectTodoDescription = ref; }}
                         />
                         <Button type="submit" bsStyle="success">Add To-Do</Button>

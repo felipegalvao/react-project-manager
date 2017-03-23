@@ -1,3 +1,4 @@
+// Projects Actions
 export var addProject = (project) => {
     return {
         type: 'ADD_PROJECT',
@@ -5,6 +6,7 @@ export var addProject = (project) => {
     }
 }
 
+// Project Todos Actions
 export var addProjectTodo = (todo) => {    
     return {
         type: 'ADD_PROJECT_TODO',        
@@ -24,5 +26,21 @@ export var setProjectTodoDueDate = (todoId, todoDueDate) => {
         type: 'SET_PROJECT_TODO_DUE_DATE',
         todoId,
         todoDueDate
+    }
+}
+
+// Project Messages Actions
+export var addProjectMessage = (message) => {    
+    return {
+        type: 'ADD_PROJECT_MESSAGE',
+        message
+    }
+}
+
+//Project Events Actions
+export var addProjectEvent = (event) => {
+    return {
+        type: 'ADD_PROJECT_EVENT',
+        event
     }
 }
