@@ -1,5 +1,6 @@
 @import "base/variables";
 
+@import "components/ProjectList";
 @import "components/ProjectListItem";
 @import "components/AddProject";
 @import "components/ProjectView";
@@ -8,6 +9,9 @@
 @import "components/AddProjectTodo";
 @import "components/ProjectMessagesList";
 @import "components/ProjectMessage";
+@import "components/ProjectEvents";
+@import "components/ProjectEventsList";
+@import "components/ProjectEvent";
 
 body {
     background-color: $background-bright;

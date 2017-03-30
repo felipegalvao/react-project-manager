@@ -6,7 +6,7 @@ class ProjectMessageBoard extends Component {
     render() {
         return (
             <div className="row row-project-todos">
-                    <div className="col-sm-6 col-sm-offset-3 col-todos">
+                    <div className="col-sm-6 col-sm-offset-3 col-todos col-project-area">
                         <h3>Message Board</h3>
                         <AddProjectMessage id={this.props.params.id} />
                         <ProjectMessagesList id={this.props.params.id} />

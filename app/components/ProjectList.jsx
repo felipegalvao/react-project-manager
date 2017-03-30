@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
 import ProjectListItem from './ProjectListItem.jsx';
 
@@ -17,7 +18,12 @@ class ProjectList extends Component {
 
         return (
             <div className="row">
-                {renderProjects()}
+                <ReactCSSTransitionGroup
+                    transitionName="project-animation"
+                    transitionEnterTimeout={500}
+                    transitionLeaveTimeout={500}>
+                    {renderProjects()}
+                </ReactCSSTransitionGroup>
             </div>
         );
     }

@@ -10,8 +10,12 @@ class AddProjectEvent extends Component {
     handleAddProjectEvent = (e) => {
         var {dispatch} = this.props;
         e.preventDefault();
-        var eventDescription = this.projectEventDescription.value;
-        var eventDate = moment(this.projectEventDate.valueAsDate).utc().unix();
+        var eventDescription = this.projectEventDescription.value;        
+        if (this.projectEventDate.valueAsDate === null) {
+            var eventDate = null;
+        } else {
+            var eventDate = moment(this.projectEventDate.valueAsDate).utc().unix();
+        }        
         this.projectEventDescription.value = "";
         this.projectEventDate.value = "";
 

@@ -1,0 +1,8 @@
+.project-animation-enter {
+    opacity: 0.01;
+}
+
+.project-animation-enter.project-animation-enter-active {
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
+}

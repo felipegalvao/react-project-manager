@@ -20,7 +20,7 @@ class ProjectEventsList extends Component {
         }
 
         return (
-            <div>
+            <div className="project-events-list-container">
                 {renderProjectEventsList()}
             </div>
         );
