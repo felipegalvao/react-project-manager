@@ -18,7 +18,7 @@ require('style-loader!css-loader!sass-loader!./styles/app.scss');
 
 ReactDOM.render(
     <Provider store={store}>
-        <Router history={hashHistory}>
+        <Router history={browserHistory}>
             <Route path="/" component={ProjectManagerApp}>
                 <IndexRoute component={MainDashboard} />
                 <Route path='/projects/:id' component={ProjectView}>
