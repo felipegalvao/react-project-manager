@@ -22,3 +22,12 @@
     }
     margin-top: 13%;
 }
+
+.show-add-project-animation-appear, .form-add-project-animation-appear {
+    opacity: 0.01;
+}
+
+.show-add-project-animation-appear.show-add-project-animation-appear-active, .form-add-project-animation-appear.form-add-project-animation-appear-active {
+    opacity: 1;
+    transition: opacity .5s ease-in;
+}

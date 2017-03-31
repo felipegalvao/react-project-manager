@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import {Button, FormGroup, FormControl} from 'react-bootstrap';
 import {connect} from 'react-redux';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 var uuid = require('node-uuid');
 
 import * as actions from '../actions/actions.jsx';
@@ -48,27 +49,34 @@ class AddProject extends Component {
         var renderAddItem = () => {
             if (this.state.addProjectVisible) {
                 return (
-                    <form onSubmit={this.handleAddProject}>
-                        <FormGroup>
-                            <FormControl
-                                type="text"                                
-                                placeholder="Enter Project name" 
-                                id="projectName"
-                                inputRef={ref => { this.projectNameInput = ref; }}
-                            />
-                        </FormGroup>
-                        <FormGroup className="addproject-buttons-container">
-                            <Button type="submit" bsStyle="success">Save</Button>
-                            <Button onClick={this.handleCancelAddProject}>Cancel</Button>
-                        </FormGroup>                        
-                    </form>
+                    <ReactCSSTransitionGroup
+                        transitionName="show-add-project-animation"
+                        transitionAppear={true}
+                        transitionAppearTimeout={500}
+                        transitionEnter={false}
+                        transitionLeave={false}>
+                        <form onSubmit={this.handleAddProject}>
+                            <FormGroup>
+                                <FormControl
+                                    type="text"                                
+                                    placeholder="Enter Project name" 
+                                    id="projectName"
+                                    inputRef={ref => { this.projectNameInput = ref; }}
+                                />
+                            </FormGroup>
+                            <FormGroup className="addproject-buttons-container">
+                                <Button type="submit" bsStyle="success">Save</Button>
+                                <Button onClick={this.handleCancelAddProject}>Cancel</Button>
+                            </FormGroup>                        
+                        </form>
+                    </ReactCSSTransitionGroup>
                 )
             } else {
-                return (
+                return (                    
                     <div className="showaddproject-container">
                         <i className="fa fa-plus" aria-hidden="true" onClick={this.handleShowAddProject}></i>
                         <p onClick={this.handleShowAddProject}>New Project</p>
-                    </div>
+                    </div>                    
                 )
             }
         }
@@ -76,8 +84,8 @@ class AddProject extends Component {
         return (
             <div className="row">
                 <div className="col-sm-4 col-add-project">
-                    <div className="card-element card-add-project text-center">
-                        {renderAddItem()}
+                    <div className="card-element card-add-project text-center">                        
+                        {renderAddItem()}                        
                     </div>                    
                 </div>
             </div>

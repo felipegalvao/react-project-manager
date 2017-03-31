@@ -38,6 +38,13 @@ class ProjectViewNav extends Component {
                         </Link>
                     </div>
                 </div>                    
+                <div className="col-sm-2">
+                    <div className="sm-card-projectview">
+                        <Link to={baseLink + "/members"}>
+                            <p>Project Members</p>
+                        </Link>
+                    </div>
+                </div>
             </div>
         );
     }

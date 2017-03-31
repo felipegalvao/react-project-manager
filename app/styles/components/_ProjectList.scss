@@ -1,8 +1,8 @@
-.project-animation-enter {
-    opacity: 0.01;
+.project-animation-enter {    
+    transform: scale(0.1);
 }
 
 .project-animation-enter.project-animation-enter-active {
-    opacity: 1;
-    transition: opacity 0.5s ease-in;
+    transform: scale(1);
+    transition: transform 0.5s;
 }

@@ -31,7 +31,7 @@ class ProjectTodoItem extends Component {
         if (this.projectTodoDueDate.valueAsDate === null) {
             var dueDate = null;
         } else {
-            var dueDate = moment(this.projectTodoDueDate.valueAsDate).utc().unix();
+            var dueDate = moment(this.projectTodoDueDate.valueAsDate).unix();
         }
         
         dispatch(actions.setProjectTodoDueDate(id, dueDate));
