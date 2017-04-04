@@ -14111,7 +14111,7 @@ function forEach(xs, f) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.addProjectEvent = exports.addProjectMessage = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProject = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
+exports.addProjectEvent = exports.addProjectMessage = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProject = exports.startLogout = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
 
 var _firebase = __webpack_require__(191);
 
@@ -14121,7 +14121,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // Login and Logout Actions
 var startGithubLogin = exports.startGithubLogin = function startGithubLogin() {
-    console.log('starting Github Login');
+    return function (dispatch, getState) {
+        return _firebase2.default.auth().signInWithPopup(_firebase.githubProvider).then(function (result) {
+            console.log('Auth worked!', result);
+        }, function (error) {
+            console.log('Unable to auth', error);
+        });
+    };
 };
 
 var startGoogleLogin = exports.startGoogleLogin = function startGoogleLogin() {
@@ -14135,7 +14141,21 @@ var startGoogleLogin = exports.startGoogleLogin = function startGoogleLogin() {
 };
 
 var startFacebookLogin = exports.startFacebookLogin = function startFacebookLogin() {
-    console.log('starting Facebook Login');
+    return function (dispatch, getState) {
+        return _firebase2.default.auth().signInWithPopup(_firebase.facebookProvider).then(function (result) {
+            console.log('Auth worked!', result);
+        }, function (error) {
+            console.log('Unable to auth', error);
+        });
+    };
+};
+
+var startLogout = exports.startLogout = function startLogout(uid) {
+    return function (dispatch, getState) {
+        return _firebase2.default.auth().signOut().then(function () {
+            console.log('logout successful');
+        });
+    };
 };
 
 // Projects Actions
@@ -50630,6 +50650,14 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouter = __webpack_require__(73);
 
+var _reactRedux = __webpack_require__(28);
+
+var _actions = __webpack_require__(56);
+
+var actions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -50642,9 +50670,22 @@ var Nav = function (_Component) {
     _inherits(Nav, _Component);
 
     function Nav() {
+        var _ref;
+
+        var _temp, _this, _ret;
+
         _classCallCheck(this, Nav);
 
-        return _possibleConstructorReturn(this, (Nav.__proto__ || Object.getPrototypeOf(Nav)).apply(this, arguments));
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Nav.__proto__ || Object.getPrototypeOf(Nav)).call.apply(_ref, [this].concat(args))), _this), _this.handleLogout = function () {
+            var dispatch = _this.props.dispatch;
+
+
+            dispatch(actions.startLogout());
+        }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 
     _createClass(Nav, [{
@@ -50701,7 +50742,7 @@ var Nav = function (_Component) {
                                 null,
                                 _react2.default.createElement(
                                     'a',
-                                    { href: '#' },
+                                    { href: '#', onClick: this.handleLogout },
                                     'Logout'
                                 )
                             )
@@ -50715,7 +50756,7 @@ var Nav = function (_Component) {
     return Nav;
 }(_react.Component);
 
-exports.default = Nav;
+exports.default = (0, _reactRedux.connect)()(Nav);
 
 /***/ }),
 /* 444 */

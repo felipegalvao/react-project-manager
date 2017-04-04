@@ -2,7 +2,13 @@ import firebase, {githubProvider, googleProvider, facebookProvider} from '../fir
 
 // Login and Logout Actions
 export var startGithubLogin = () => {
-    console.log('starting Github Login');
+    return (dispatch, getState) => {
+        return firebase.auth().signInWithPopup(githubProvider).then((result) => {
+            console.log('Auth worked!', result);
+        }, (error) => {
+            console.log('Unable to auth', error);
+        });
+    }
 }
 
 export var startGoogleLogin = () => {
@@ -16,7 +22,21 @@ export var startGoogleLogin = () => {
 }
 
 export var startFacebookLogin = () => {
-    console.log('starting Facebook Login');
+    return (dispatch, getState) => {
+        return firebase.auth().signInWithPopup(facebookProvider).then((result) => {
+            console.log('Auth worked!', result);
+        }, (error) => {
+            console.log('Unable to auth', error);
+        });
+    }
+}
+
+export var startLogout = (uid) => {
+    return (dispatch, getState) => {
+        return firebase.auth().signOut().then(() => {            
+            console.log('logout successful');            
+        });
+    }
 }
 
 // Projects Actions

@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
+import {connect} from 'react-redux';
+
+import * as actions from '../actions/actions.jsx';
 
 class Nav extends Component {
+    handleLogout = () => {
+        var {dispatch} = this.props;
+
+        dispatch(actions.startLogout());
+    }
+
     render() {
         return (
             <nav className="navbar navbar-default navbar-fixed-top">
@@ -20,7 +29,7 @@ class Nav extends Component {
                             <li className="active"><Link to='/'>Home</Link></li>                        
                         </ul>
                         <ul className="nav navbar-nav navbar-right">
-                            <li><a href="#">Logout</a></li>                                                
+                            <li><a href="#" onClick={this.handleLogout}>Logout</a></li>                                                
                         </ul>
                     </div>
                 </div>
@@ -29,4 +38,4 @@ class Nav extends Component {
     }
 }
 
-export default Nav;
+export default connect()(Nav);
