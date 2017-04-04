@@ -1,0 +1,29 @@
+.row-login {
+    button {
+        margin: 10px;
+        border-width: 0;
+        outline: none;
+        border-radius: 2px;
+        width: 75%;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .6);        
+        padding: 15px;
+        background-image: none;
+        font-weight: normal;
+        font-size: 1.8rem;
+    }
+
+    .btn-github {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .btn-google {
+        background-color: #dd4b39;
+        color: #fff;
+    }
+
+    .btn-facebook {
+        background-color: #3B5998;
+        color: #fff;
+    }
+}

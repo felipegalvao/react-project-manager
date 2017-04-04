@@ -1,3 +1,16 @@
+// Login and Logout Actions
+export var startGithubLogin = () => {
+    console.log('starting Github Login');
+}
+
+export var startGoogleLogin = () => {
+    console.log('starting Google Login');
+}
+
+export var startFacebookLogin = () => {
+    console.log('starting Facebook Login');
+}
+
 // Projects Actions
 export var addProject = (project) => {
     return {
@@ -9,7 +22,7 @@ export var addProject = (project) => {
 // Project Todos Actions
 export var addProjectTodo = (todo) => {    
     return {
-        type: 'ADD_PROJECT_TODO',        
+        type: 'ADD_PROJECT_TODO',
         todo
     }
 }
