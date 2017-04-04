@@ -12494,7 +12494,7 @@ module.exports = g;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.addProjectEvent = exports.addProjectMessage = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProject = exports.startAddProject = exports.logout = exports.login = exports.startLogout = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
+exports.addProjectEvent = exports.addProjectMessage = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProjects = exports.startAddProjects = exports.addProject = exports.startAddProject = exports.logout = exports.login = exports.startLogout = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -12504,7 +12504,7 @@ var _firebase2 = _interopRequireDefault(_firebase);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Login and Logout Actions
+// --- Login and Logout Actions
 var startGithubLogin = exports.startGithubLogin = function startGithubLogin() {
     return function (dispatch, getState) {
         return _firebase2.default.auth().signInWithPopup(_firebase.githubProvider).then(function (result) {
@@ -12555,6 +12555,7 @@ var logout = exports.logout = function logout() {
         type: 'LOGOUT'
     };
 };
+// --- End of Login and Logout actions
 
 // Projects Actions
 var startAddProject = exports.startAddProject = function startAddProject(project) {
@@ -12567,15 +12568,9 @@ var startAddProject = exports.startAddProject = function startAddProject(project
         var projectRef = _firebase.firebaseRef.child('projects').push(projectToAdd);
 
         var updates = {};
-        updates['/users/' + uid + '/projects_where_owner/' + projectRef.key] = true;
+        updates['/users/' + uid + '/projectsWhereOwner/' + projectRef.key] = true;
 
         return _firebase.firebaseRef.update(updates);
-        //    return projectRef.then(() => {
-        //        var userProjectOwnerObj = {};
-        //        userProjectOwnerObj['projects_owner'] = {};
-        //        userProjectOwnerObj['projects_owner'][projectRef.key] = true;
-        //        firebaseRef.child('users/' + uid).update(userProjectOwnerObj);
-        //    })
     };
 };
 
@@ -12583,6 +12578,30 @@ var addProject = exports.addProject = function addProject(project) {
     return {
         type: 'ADD_PROJECT',
         project: project
+    };
+};
+
+var startAddProjects = exports.startAddProjects = function startAddProjects() {
+    return function (dispatch, getState) {
+        var uid = getState().auth.uid;
+        var projectsWhereOwnerRef = _firebase2.default.database().ref('users/' + uid + '/projectsWhereOwner').on('value', function (snapshot) {
+            var projectsWhereOwner = snapshot.val() || {};
+            var projectsList = [];
+            Object.keys(projectsWhereOwner).forEach(function (projectId) {
+                projectsList.push(_extends({
+                    id: projectId
+                }, projectsWhereOwner[projectId]));
+            });
+
+            dispatch(addProjects(projectsList));
+        });
+    };
+};
+
+var addProjects = exports.addProjects = function addProjects(projects) {
+    return {
+        type: 'ADD_PROJECTS',
+        projects: projects
     };
 };
 
@@ -48891,6 +48910,7 @@ var store = __webpack_require__(462).configure();
 _index2.default.auth().onAuthStateChanged(function (user) {
     if (user) {
         store.dispatch(actions.login(user));
+        store.dispatch(actions.startAddProjects());
         _reactRouter.browserHistory.push('/');
     } else {
         store.dispatch(actions.logout());
@@ -50748,7 +50768,6 @@ var Nav = function (_Component) {
 
 
             var renderLogout = function renderLogout() {
-                console.log(auth);
                 if (Object.keys(auth).length > 0) {
                     return _react2.default.createElement(
                         'ul',
@@ -51117,6 +51136,12 @@ var _ProjectListItem = __webpack_require__(449);
 
 var _ProjectListItem2 = _interopRequireDefault(_ProjectListItem);
 
+var _actions = __webpack_require__(39);
+
+var actions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -51136,6 +51161,13 @@ var ProjectList = function (_Component) {
 
     _createClass(ProjectList, [{
         key: 'render',
+
+        // componentWillMount() {
+        //     var {dispatch} = this.props;
+
+        //     dispatch(actions.startAddProjects());
+        // }
+
         value: function render() {
             var projects = this.props.projects;
 
@@ -52259,6 +52291,8 @@ var projectsReducer = exports.projectsReducer = function projectsReducer() {
     switch (action.type) {
         case 'ADD_PROJECT':
             return [].concat(_toConsumableArray(state), [action.project]);
+        case 'ADD_PROJECTS':
+            return [].concat(_toConsumableArray(action.projects));
         default:
             return state;
     }

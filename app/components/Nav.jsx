@@ -14,8 +14,7 @@ class Nav extends Component {
     render() {
         var {auth} = this.props;
 
-        var renderLogout = () => {
-            console.log(auth);
+        var renderLogout = () => {            
             if (Object.keys(auth).length > 0) {
                 return (
                     <ul className="nav navbar-nav navbar-right">

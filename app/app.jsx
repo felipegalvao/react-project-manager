@@ -20,6 +20,7 @@ import firebase from './firebase/index.js';
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     store.dispatch(actions.login(user));
+    store.dispatch(actions.startAddProjects());
     browserHistory.push('/');
   } else {
     store.dispatch(actions.logout());

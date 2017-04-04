@@ -4,7 +4,11 @@ export var projectsReducer = (state = [], action) => {
             return [
                 ...state,
                 action.project
-            ];        
+            ];
+        case 'ADD_PROJECTS':
+            return [
+                ...action.projects
+            ]
         default:
             return state;
     }

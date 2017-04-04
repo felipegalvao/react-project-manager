@@ -3,8 +3,15 @@ import {connect} from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
 import ProjectListItem from './ProjectListItem.jsx';
+import * as actions from '../actions/actions.jsx';
 
 class ProjectList extends Component {
+    // componentWillMount() {
+    //     var {dispatch} = this.props;
+        
+    //     dispatch(actions.startAddProjects());
+    // }
+
     render() {
         var {projects} = this.props;
 

@@ -1,6 +1,6 @@
 import firebase, {firebaseRef, githubProvider, googleProvider, facebookProvider} from '../firebase/';
 
-// Login and Logout Actions
+// --- Login and Logout Actions
 export var startGithubLogin = () => {
     return (dispatch, getState) => {
         return firebase.auth().signInWithPopup(githubProvider).then((result) => {
@@ -51,6 +51,7 @@ export var logout = () => {
         type: 'LOGOUT'
     };
 }
+// --- End of Login and Logout actions
 
 // Projects Actions
 export var startAddProject = (project) => {
@@ -64,15 +65,9 @@ export var startAddProject = (project) => {
        var projectRef = firebaseRef.child('projects').push(projectToAdd);
 
        var updates = {};
-       updates['/users/' + uid + '/projects_where_owner/' + projectRef.key] = true;       
+       updates['/users/' + uid + '/projectsWhereOwner/' + projectRef.key] = true;       
 
-       return firebaseRef.update(updates);
-    //    return projectRef.then(() => {
-    //        var userProjectOwnerObj = {};
-    //        userProjectOwnerObj['projects_owner'] = {};
-    //        userProjectOwnerObj['projects_owner'][projectRef.key] = true;
-    //        firebaseRef.child('users/' + uid).update(userProjectOwnerObj);
-    //    })
+       return firebaseRef.update(updates);    
     }
 }
 
@@ -81,6 +76,31 @@ export var addProject = (project) => {
         type: 'ADD_PROJECT',
         project
     };
+}
+
+export var startAddProjects = () => {    
+    return (dispatch, getState) => {
+        var uid = getState().auth.uid;        
+        var projectsWhereOwnerRef = firebase.database().ref('users/' + uid + '/projectsWhereOwner').on('value', function(snapshot) {
+            var projectsWhereOwner = snapshot.val() || {};
+            var projectsList = [];
+            Object.keys(projectsWhereOwner).forEach((projectId) => {
+                projectsList.push({
+                    id: projectId,
+                    ...projectsWhereOwner[projectId]
+                })                
+            });
+
+            dispatch(addProjects(projectsList));
+        });
+    }
+}
+
+export var addProjects = (projects) => {
+    return {
+        type: 'ADD_PROJECTS',
+        projects
+    }
 }
 
 // Project Todos Actions
