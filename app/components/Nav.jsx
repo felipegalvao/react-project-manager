@@ -9,9 +9,22 @@ class Nav extends Component {
         var {dispatch} = this.props;
 
         dispatch(actions.startLogout());
-    }
+    }    
 
     render() {
+        var {auth} = this.props;
+
+        var renderLogout = () => {
+            console.log(auth);
+            if (Object.keys(auth).length > 0) {
+                return (
+                    <ul className="nav navbar-nav navbar-right">
+                        <li><a href="#" onClick={this.handleLogout}>Logout</a></li>                                                
+                    </ul>
+                )
+            }
+        }
+
         return (
             <nav className="navbar navbar-default navbar-fixed-top">
                 <div className="container">
@@ -28,9 +41,7 @@ class Nav extends Component {
                         <ul className="nav navbar-nav">
                             <li className="active"><Link to='/'>Home</Link></li>                        
                         </ul>
-                        <ul className="nav navbar-nav navbar-right">
-                            <li><a href="#" onClick={this.handleLogout}>Logout</a></li>                                                
-                        </ul>
+                        {renderLogout()}
                     </div>
                 </div>
             </nav>            
@@ -38,4 +49,8 @@ class Nav extends Component {
     }
 }
 
-export default connect()(Nav);
+export default connect(
+    (state) => {
+        return state;
+    }
+)(Nav);

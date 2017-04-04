@@ -14,7 +14,18 @@ import ProjectMessageBoard from './components/ProjectMessageBoard.jsx';
 import ProjectEvents from './components/ProjectEvents.jsx';
 var store = require('./store/configureStore.jsx').configure();
 
+import * as actions from './actions/actions.jsx';
 import firebase from './firebase/index.js';
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    store.dispatch(actions.login(user));
+    browserHistory.push('/');
+  } else {
+    store.dispatch(actions.logout());
+    browserHistory.push('/login');
+  }
+});
 
 // Load app CSS
 require('style-loader!css-loader!sass-loader!./styles/app.scss');

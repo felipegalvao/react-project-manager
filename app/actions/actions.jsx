@@ -36,7 +36,20 @@ export var startLogout = (uid) => {
         return firebase.auth().signOut().then(() => {            
             console.log('logout successful');            
         });
-    }
+    };
+}
+
+export var login = (user) => {
+    return {
+        type: 'LOGIN',
+        user
+    };
+}
+
+export var logout = () => {
+    return {
+        type: 'LOGOUT'
+    };
 }
 
 // Projects Actions
@@ -44,7 +57,7 @@ export var addProject = (project) => {
     return {
         type: 'ADD_PROJECT',
         project
-    }
+    };
 }
 
 // Project Todos Actions

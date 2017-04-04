@@ -69,3 +69,19 @@ export var eventsReducer = (state = [], action) => {
             return state;
     }
 }
+
+
+export var authReducer = (state = {}, action) => {
+    switch (action.type) {
+        case 'LOGIN':
+            return {
+                uid: action.user.uid,
+                email: action.user.email,
+                displayName: action.user.displayName
+            };
+        case 'LOGOUT':
+            return {};
+        default:
+            return state;
+    }
+}

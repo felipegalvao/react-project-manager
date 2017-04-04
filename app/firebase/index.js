@@ -15,17 +15,6 @@ var config = {
 };
 firebase.initializeApp(config);
 
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    // store.dispatch(actions.login(user.uid));
-    // store.dispatch(actions.startAddTodos());
-    browserHistory.push('/');
-  } else {
-    // store.dispatch(actions.logout());
-    browserHistory.push('/login');
-  }
-});
-
 export var githubProvider = new firebase.auth.GithubAuthProvider();
 export var googleProvider = new firebase.auth.GoogleAuthProvider();
 export var facebookProvider = new firebase.auth.FacebookAuthProvider();
