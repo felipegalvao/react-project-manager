@@ -1,4 +1,4 @@
-import firebase, {githubProvider, googleProvider, facebookProvider} from '../firebase/';
+import firebase, {firebaseRef, githubProvider, googleProvider, facebookProvider} from '../firebase/';
 
 // Login and Logout Actions
 export var startGithubLogin = () => {
@@ -53,6 +53,29 @@ export var logout = () => {
 }
 
 // Projects Actions
+export var startAddProject = (project) => {
+    console.log('Starting Add Project');
+    return (dispatch, getState) => {
+       var uid = getState().auth.uid;
+       var projectToAdd = {
+           ...project,
+           owner: uid
+       }
+       var projectRef = firebaseRef.child('projects').push(projectToAdd);
+
+       var updates = {};
+       updates['/users/' + uid + '/projects_where_owner/' + projectRef.key] = true;       
+
+       return firebaseRef.update(updates);
+    //    return projectRef.then(() => {
+    //        var userProjectOwnerObj = {};
+    //        userProjectOwnerObj['projects_owner'] = {};
+    //        userProjectOwnerObj['projects_owner'][projectRef.key] = true;
+    //        firebaseRef.child('users/' + uid).update(userProjectOwnerObj);
+    //    })
+    }
+}
+
 export var addProject = (project) => {
     return {
         type: 'ADD_PROJECT',
