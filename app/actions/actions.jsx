@@ -1,10 +1,18 @@
+import firebase, {githubProvider, googleProvider, facebookProvider} from '../firebase/';
+
 // Login and Logout Actions
 export var startGithubLogin = () => {
     console.log('starting Github Login');
 }
 
 export var startGoogleLogin = () => {
-    console.log('starting Google Login');
+    return (dispatch, getState) => {
+        return firebase.auth().signInWithPopup(googleProvider).then((result) => {
+            console.log('Auth worked!', result);
+        }, (error) => {
+            console.log('Unable to auth', error);
+        });
+    }
 }
 
 export var startFacebookLogin = () => {

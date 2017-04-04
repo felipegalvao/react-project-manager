@@ -14,29 +14,7 @@ import ProjectMessageBoard from './components/ProjectMessageBoard.jsx';
 import ProjectEvents from './components/ProjectEvents.jsx';
 var store = require('./store/configureStore.jsx').configure();
 
-import * as firebase from 'firebase';
-
-// Initialize Firebase
-var config = {
-    apiKey: "AIzaSyAsFkuLG_WDqkp9ORGz4ig-foctr4wPpnk",
-    authDomain: "react-project-manager.firebaseapp.com",
-    databaseURL: "https://react-project-manager.firebaseio.com",
-    projectId: "react-project-manager",
-    storageBucket: "react-project-manager.appspot.com",
-    messagingSenderId: "89966217707"
-};
-firebase.initializeApp(config);
-
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    // store.dispatch(actions.login(user.uid));
-    // store.dispatch(actions.startAddTodos());
-    browserHistory.push('/');
-  } else {
-    // store.dispatch(actions.logout());
-    browserHistory.push('/login');
-  }
-});
+import firebase from './firebase/index.js';
 
 // Load app CSS
 require('style-loader!css-loader!sass-loader!./styles/app.scss');
