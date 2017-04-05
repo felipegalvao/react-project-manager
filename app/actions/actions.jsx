@@ -33,7 +33,9 @@ export var startFacebookLogin = () => {
 
 export var startLogout = (uid) => {
     return (dispatch, getState) => {
-        return firebase.auth().signOut().then(() => {            
+        return firebase.auth().signOut().then(() => {
+            firebase.database().ref('users/' + uid + '/projectsWhereOwner').off();
+            firebase.database().ref('projects').off();
             console.log('logout successful');            
         });
     };
@@ -80,19 +82,33 @@ export var addProject = (project) => {
 
 export var startAddProjects = () => {    
     return (dispatch, getState) => {
-        var uid = getState().auth.uid;        
-        var projectsWhereOwnerRef = firebase.database().ref('users/' + uid + '/projectsWhereOwner').on('value', function(snapshot) {
+        var uid = getState().auth.uid;
+        
+        var projectsWhereOwnerRef = firebase.database().ref('users/' + uid + '/projectsWhereOwner').on('value', function(snapshot) {            
             var projectsWhereOwner = snapshot.val() || {};
+            var projectIdsList = [];
             var projectsList = [];
+            
             Object.keys(projectsWhereOwner).forEach((projectId) => {
-                projectsList.push({
-                    id: projectId,
-                    ...projectsWhereOwner[projectId]
-                })                
+                projectIdsList.push(projectId)                
             });
 
-            dispatch(addProjects(projectsList));
+            console.log(projectIdsList);
+            var projectsRef = firebase.database().ref('projects').orderByKey().startAt(projectIdsList[0]).endAt(projectIdsList[projectIdsList.length - 1]).on('value', function(snapshot) {
+            // var projectsRef = firebase.database().ref('projects').equalTo(projectIdsList[0]).on('value', function(snapshot) {
+                var projects = snapshot.val() || {};
+                Object.keys(projects).forEach((projectId) => {
+                    projectsList.push({
+                        id: projectId,
+                        ...projects[projectId]
+                    });
+                });
+
+                dispatch(addProjects(projectsList));
+            })            
         });
+        
+        
     }
 }
 

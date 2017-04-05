@@ -12538,6 +12538,8 @@ var startFacebookLogin = exports.startFacebookLogin = function startFacebookLogi
 var startLogout = exports.startLogout = function startLogout(uid) {
     return function (dispatch, getState) {
         return _firebase2.default.auth().signOut().then(function () {
+            _firebase2.default.database().ref('users/' + uid + '/projectsWhereOwner').off();
+            _firebase2.default.database().ref('projects').off();
             console.log('logout successful');
         });
     };
@@ -12584,16 +12586,28 @@ var addProject = exports.addProject = function addProject(project) {
 var startAddProjects = exports.startAddProjects = function startAddProjects() {
     return function (dispatch, getState) {
         var uid = getState().auth.uid;
+
         var projectsWhereOwnerRef = _firebase2.default.database().ref('users/' + uid + '/projectsWhereOwner').on('value', function (snapshot) {
             var projectsWhereOwner = snapshot.val() || {};
+            var projectIdsList = [];
             var projectsList = [];
+
             Object.keys(projectsWhereOwner).forEach(function (projectId) {
-                projectsList.push(_extends({
-                    id: projectId
-                }, projectsWhereOwner[projectId]));
+                projectIdsList.push(projectId);
             });
 
-            dispatch(addProjects(projectsList));
+            console.log(projectIdsList);
+            var projectsRef = _firebase2.default.database().ref('projects').orderByKey().startAt(projectIdsList[0]).endAt(projectIdsList[projectIdsList.length - 1]).on('value', function (snapshot) {
+                // var projectsRef = firebase.database().ref('projects').equalTo(projectIdsList[0]).on('value', function(snapshot) {
+                var projects = snapshot.val() || {};
+                Object.keys(projects).forEach(function (projectId) {
+                    projectsList.push(_extends({
+                        id: projectId
+                    }, projects[projectId]));
+                });
+
+                dispatch(addProjects(projectsList));
+            });
         });
     };
 };
@@ -52293,6 +52307,8 @@ var projectsReducer = exports.projectsReducer = function projectsReducer() {
             return [].concat(_toConsumableArray(state), [action.project]);
         case 'ADD_PROJECTS':
             return [].concat(_toConsumableArray(action.projects));
+        case 'LOGOUT':
+            return [];
         default:
             return state;
     }

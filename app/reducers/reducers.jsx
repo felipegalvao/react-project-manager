@@ -9,6 +9,8 @@ export var projectsReducer = (state = [], action) => {
             return [
                 ...action.projects
             ]
+        case 'LOGOUT':
+            return [];
         default:
             return state;
     }
