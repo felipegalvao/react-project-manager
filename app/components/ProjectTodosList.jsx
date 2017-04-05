@@ -3,17 +3,31 @@ import {connect} from 'react-redux';
 
 import {filterItems} from '../utils/utils.js';
 import ProjectTodoItem from './ProjectTodoItem.jsx';
+import * as actions from '../actions/actions.jsx'
 
 class ProjectTodosList extends Component {
+    componentWillMount() {
+        console.log('entering componentWillMount');
+        var {dispatch} = this.props;
+
+        dispatch(actions.startGetProjectTodos(this.props.id));
+    }
+
+    componentWillUnmount() {
+        var {dispatch} = this.props;
+
+        dispatch(actions.addProjectTodos([]));
+    }
+
     render() {
         var {todos} = this.props;
-        var filteredTodos = filterItems(todos, this.props.id);        
+        // var filteredTodos = filterItems(todos, this.props.id);        
 
         var renderProjectTodoList = () => {            
-            if (filteredTodos.length === 0) {
+            if (todos.length === 0) {
                 return (<p>This project still doesn't have any To-Do</p>)
             } else {                
-                return filteredTodos.map((todo) => {
+                return todos.map((todo) => {
                     return (
                         <ProjectTodoItem key={todo.id} {...todo}/>
                     )

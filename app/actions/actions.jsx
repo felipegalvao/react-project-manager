@@ -55,7 +55,7 @@ export var logout = () => {
 }
 // --- End of Login and Logout actions
 
-// Projects Actions
+// --- Projects Actions
 export var startAddProject = (project) => {
     console.log('Starting Add Project');
     return (dispatch, getState) => {
@@ -82,33 +82,20 @@ export var addProject = (project) => {
 
 export var startAddProjects = () => {    
     return (dispatch, getState) => {
-        var uid = getState().auth.uid;
+        var uid = getState().auth.uid;                
         
-        var projectsWhereOwnerRef = firebase.database().ref('users/' + uid + '/projectsWhereOwner').on('value', function(snapshot) {            
-            var projectsWhereOwner = snapshot.val() || {};
-            var projectIdsList = [];
+        var projectsRef = firebase.database().ref('projects').orderByChild("owner").equalTo(uid).on('value', function(snapshot) {            
             var projectsList = [];
-            
-            Object.keys(projectsWhereOwner).forEach((projectId) => {
-                projectIdsList.push(projectId)                
+            var projects = snapshot.val() || {};
+            Object.keys(projects).forEach((projectId) => {
+                projectsList.push({
+                    id: projectId,
+                    ...projects[projectId]
+                });
             });
 
-            console.log(projectIdsList);
-            var projectsRef = firebase.database().ref('projects').orderByChild("owner").equalTo(uid).on('value', function(snapshot) {
-            // var projectsRef = firebase.database().ref('projects').equalTo(projectIdsList[0]).on('value', function(snapshot) {
-                var projects = snapshot.val() || {};
-                Object.keys(projects).forEach((projectId) => {
-                    projectsList.push({
-                        id: projectId,
-                        ...projects[projectId]
-                    });
-                });
-
-                dispatch(addProjects(projectsList));
-            })            
-        });
-        
-        
+            dispatch(addProjects(projectsList));
+        })
     }
 }
 
@@ -119,7 +106,9 @@ export var addProjects = (projects) => {
     }
 }
 
-// Project Todos Actions
+// --- End of Projects Actions
+
+// --- Project Todos Actions
 export var addProjectTodo = (todo) => {    
     return {
         type: 'ADD_PROJECT_TODO',
@@ -141,6 +130,51 @@ export var setProjectTodoDueDate = (todoId, todoDueDate) => {
         todoDueDate
     }
 }
+
+export var startAddProjectTodo = (todo) => {
+    console.log('Start adding project todo');
+    return (dispatch, getState) => {
+        var uid = getState().auth.uid;
+
+        var todoRef = firebaseRef.child('todos').push(todo);
+
+        var updates = {};
+        updates['/projects/' + todo.project + '/todos/' + todoRef.key] = true;       
+
+        return firebaseRef.update(updates);
+    }
+}
+
+export var startGetProjectTodos = (project) => {
+    return (dispatch, getState) => {        
+        console.log('starting getProjectTodos for project', project);
+
+        var projectTodosRef = firebase.database().ref('todos').orderByChild('project').equalTo(project).on('value', function(snapshot) {
+            var todosList = [];
+            var todos = snapshot.val() || {};
+            console.log(todos);
+            Object.keys(todos).forEach((todoId) => {
+                todosList.push({
+                    id: todoId,
+                    ...todos[todoId]
+                });
+            });            
+
+
+            dispatch(addProjectTodos(todosList));
+        })
+    }    
+}
+
+export var addProjectTodos = (todos) => {
+    return {
+        type: 'ADD_PROJECT_TODOS',
+        todos
+    }
+}
+
+
+// --- End of Project Todos Actions
 
 // Project Messages Actions
 export var addProjectMessage = (message) => {    

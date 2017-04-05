@@ -12,15 +12,15 @@ class AddProjectTodo extends Component {
         var todoDescription = this.projectTodoDescription.value;
         this.projectTodoDescription.value = "";
 
-        var todo = {
-            id: uuid(),
-            projectId: this.props.id,
+        var todo = {            
+            project: this.props.id,
             description: todoDescription,
             completed: false,
-            dueDate: null
+            dueDate: null,
+            responsible: null
         }
 
-        dispatch(actions.addProjectTodo(todo));
+        dispatch(actions.startAddProjectTodo(todo));
     }
 
     render() {

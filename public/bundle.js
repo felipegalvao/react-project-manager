@@ -12494,7 +12494,7 @@ module.exports = g;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.addProjectEvent = exports.addProjectMessage = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProjects = exports.startAddProjects = exports.addProject = exports.startAddProject = exports.logout = exports.login = exports.startLogout = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
+exports.addProjectEvent = exports.addProjectMessage = exports.addProjectTodos = exports.startGetProjectTodos = exports.startAddProjectTodo = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProjects = exports.startAddProjects = exports.addProject = exports.startAddProject = exports.logout = exports.login = exports.startLogout = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -12559,7 +12559,7 @@ var logout = exports.logout = function logout() {
 };
 // --- End of Login and Logout actions
 
-// Projects Actions
+// --- Projects Actions
 var startAddProject = exports.startAddProject = function startAddProject(project) {
     console.log('Starting Add Project');
     return function (dispatch, getState) {
@@ -12587,27 +12587,16 @@ var startAddProjects = exports.startAddProjects = function startAddProjects() {
     return function (dispatch, getState) {
         var uid = getState().auth.uid;
 
-        var projectsWhereOwnerRef = _firebase2.default.database().ref('users/' + uid + '/projectsWhereOwner').on('value', function (snapshot) {
-            var projectsWhereOwner = snapshot.val() || {};
-            var projectIdsList = [];
+        var projectsRef = _firebase2.default.database().ref('projects').orderByChild("owner").equalTo(uid).on('value', function (snapshot) {
             var projectsList = [];
-
-            Object.keys(projectsWhereOwner).forEach(function (projectId) {
-                projectIdsList.push(projectId);
+            var projects = snapshot.val() || {};
+            Object.keys(projects).forEach(function (projectId) {
+                projectsList.push(_extends({
+                    id: projectId
+                }, projects[projectId]));
             });
 
-            console.log(projectIdsList);
-            var projectsRef = _firebase2.default.database().ref('projects').orderByChild("owner").equalTo(uid).on('value', function (snapshot) {
-                // var projectsRef = firebase.database().ref('projects').equalTo(projectIdsList[0]).on('value', function(snapshot) {
-                var projects = snapshot.val() || {};
-                Object.keys(projects).forEach(function (projectId) {
-                    projectsList.push(_extends({
-                        id: projectId
-                    }, projects[projectId]));
-                });
-
-                dispatch(addProjects(projectsList));
-            });
+            dispatch(addProjects(projectsList));
         });
     };
 };
@@ -12619,7 +12608,9 @@ var addProjects = exports.addProjects = function addProjects(projects) {
     };
 };
 
-// Project Todos Actions
+// --- End of Projects Actions
+
+// --- Project Todos Actions
 var addProjectTodo = exports.addProjectTodo = function addProjectTodo(todo) {
     return {
         type: 'ADD_PROJECT_TODO',
@@ -12641,6 +12632,48 @@ var setProjectTodoDueDate = exports.setProjectTodoDueDate = function setProjectT
         todoDueDate: todoDueDate
     };
 };
+
+var startAddProjectTodo = exports.startAddProjectTodo = function startAddProjectTodo(todo) {
+    console.log('Start adding project todo');
+    return function (dispatch, getState) {
+        var uid = getState().auth.uid;
+
+        var todoRef = _firebase.firebaseRef.child('todos').push(todo);
+
+        var updates = {};
+        updates['/projects/' + todo.project + '/todos/' + todoRef.key] = true;
+
+        return _firebase.firebaseRef.update(updates);
+    };
+};
+
+var startGetProjectTodos = exports.startGetProjectTodos = function startGetProjectTodos(project) {
+    return function (dispatch, getState) {
+        console.log('starting getProjectTodos for project', project);
+
+        var projectTodosRef = _firebase2.default.database().ref('todos').orderByChild('project').equalTo(project).on('value', function (snapshot) {
+            var todosList = [];
+            var todos = snapshot.val() || {};
+            console.log(todos);
+            Object.keys(todos).forEach(function (todoId) {
+                todosList.push(_extends({
+                    id: todoId
+                }, todos[todoId]));
+            });
+
+            dispatch(addProjectTodos(todosList));
+        });
+    };
+};
+
+var addProjectTodos = exports.addProjectTodos = function addProjectTodos(todos) {
+    return {
+        type: 'ADD_PROJECT_TODOS',
+        todos: todos
+    };
+};
+
+// --- End of Project Todos Actions
 
 // Project Messages Actions
 var addProjectMessage = exports.addProjectMessage = function addProjectMessage(message) {
@@ -50461,14 +50494,14 @@ var AddProjectTodo = function (_Component) {
             _this.projectTodoDescription.value = "";
 
             var todo = {
-                id: uuid(),
-                projectId: _this.props.id,
+                project: _this.props.id,
                 description: todoDescription,
                 completed: false,
-                dueDate: null
+                dueDate: null,
+                responsible: null
             };
 
-            dispatch(actions.addProjectTodo(todo));
+            dispatch(actions.startAddProjectTodo(todo));
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 
@@ -52003,6 +52036,12 @@ var _ProjectTodoItem = __webpack_require__(455);
 
 var _ProjectTodoItem2 = _interopRequireDefault(_ProjectTodoItem);
 
+var _actions = __webpack_require__(39);
+
+var actions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52021,21 +52060,37 @@ var ProjectTodosList = function (_Component) {
     }
 
     _createClass(ProjectTodosList, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            console.log('entering componentWillMount');
+            var dispatch = this.props.dispatch;
+
+
+            dispatch(actions.startGetProjectTodos(this.props.id));
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            var dispatch = this.props.dispatch;
+
+
+            dispatch(actions.addProjectTodos([]));
+        }
+    }, {
         key: 'render',
         value: function render() {
             var todos = this.props.todos;
-
-            var filteredTodos = (0, _utils.filterItems)(todos, this.props.id);
+            // var filteredTodos = filterItems(todos, this.props.id);        
 
             var renderProjectTodoList = function renderProjectTodoList() {
-                if (filteredTodos.length === 0) {
+                if (todos.length === 0) {
                     return _react2.default.createElement(
                         'p',
                         null,
                         'This project still doesn\'t have any To-Do'
                     );
                 } else {
-                    return filteredTodos.map(function (todo) {
+                    return todos.map(function (todo) {
                         return _react2.default.createElement(_ProjectTodoItem2.default, _extends({ key: todo.id }, todo));
                     });
                 }
@@ -52321,6 +52376,8 @@ var todosReducer = exports.todosReducer = function todosReducer() {
     switch (action.type) {
         case 'ADD_PROJECT_TODO':
             return [].concat(_toConsumableArray(state), [action.todo]);
+        case 'ADD_PROJECT_TODOS':
+            return [].concat(_toConsumableArray(action.todos));
         case 'TOGGLE_PROJECT_TODO':
             return state.map(function (todo) {
                 if (todo.id === action.todoId) {

@@ -22,7 +22,11 @@ export var todosReducer = (state = [], action) => {
             return [
                 ...state,
                 action.todo
-            ]             
+            ]
+        case 'ADD_PROJECT_TODOS':
+            return [
+                ...action.todos
+            ]
         case 'TOGGLE_PROJECT_TODO':
             return state.map((todo) => {
                 if (todo.id === action.todoId) {
