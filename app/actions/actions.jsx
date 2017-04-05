@@ -94,7 +94,7 @@ export var startAddProjects = () => {
             });
 
             console.log(projectIdsList);
-            var projectsRef = firebase.database().ref('projects').orderByKey().startAt(projectIdsList[0]).endAt(projectIdsList[projectIdsList.length - 1]).on('value', function(snapshot) {
+            var projectsRef = firebase.database().ref('projects').orderByChild("owner").equalTo(uid).on('value', function(snapshot) {
             // var projectsRef = firebase.database().ref('projects').equalTo(projectIdsList[0]).on('value', function(snapshot) {
                 var projects = snapshot.val() || {};
                 Object.keys(projects).forEach((projectId) => {
