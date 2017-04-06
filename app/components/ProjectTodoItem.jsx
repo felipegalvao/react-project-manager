@@ -33,14 +33,18 @@ class ProjectTodoItem extends Component {
         } else {
             var dueDate = moment(this.projectTodoDueDate.valueAsDate).unix();
         }
+
+        var updates = {
+            dueDate
+        }
         
-        dispatch(actions.setProjectTodoDueDate(id, dueDate));
+        dispatch(actions.startUpdateProjectTodo(id, updates));
     }
 
     handleClearDueDate = (e) => {
         var {id, dispatch} = this.props;
         e.preventDefault();
-        dispatch(actions.setProjectTodoDueDate(id, null));
+        dispatch(actions.startUpdateProjectTodo(id, {dueDate: null}));
     }
 
     render() {
@@ -108,7 +112,7 @@ class ProjectTodoItem extends Component {
                 </div>
                 <div className={divTodoClass} onClick={this.handleShowHideTodoExpanded}>
                     <span className="span-todo-description">{description}</span>
-                    <span className={renderDueDateClasses()}>{dueDate === null ? ' - No Due Date' : ' - Due at ' + moment.unix(dueDate).utc().format('DD/MM/YYYY')}</span>
+                    <span className={renderDueDateClasses()}>{dueDate === undefined ? ' - No Due Date' : ' - Due at ' + moment.unix(dueDate).utc().format('DD/MM/YYYY')}</span>
                 </div>
                 {renderProjectTodoExpanded()}
             </div>

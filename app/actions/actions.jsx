@@ -80,7 +80,7 @@ export var addProject = (project) => {
     };
 }
 
-export var startAddProjects = () => {    
+export var startGetProjects = () => {    
     return (dispatch, getState) => {
         var uid = getState().auth.uid;                
         
@@ -128,6 +128,14 @@ export var setProjectTodoDueDate = (todoId, todoDueDate) => {
         type: 'SET_PROJECT_TODO_DUE_DATE',
         todoId,
         todoDueDate
+    }
+}
+
+export var startUpdateProjectTodo = (todoId, updates) => {
+    return (dispatch, getState) => {
+        var todoRef = firebaseRef.child('todos/' + todoId);        
+
+        return todoRef.update(updates);
     }
 }
 

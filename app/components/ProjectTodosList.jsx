@@ -20,8 +20,7 @@ class ProjectTodosList extends Component {
     }
 
     render() {
-        var {todos} = this.props;
-        // var filteredTodos = filterItems(todos, this.props.id);        
+        var {todos} = this.props;        
 
         var renderProjectTodoList = () => {            
             if (todos.length === 0) {

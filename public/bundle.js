@@ -6766,7 +6766,7 @@ function isnan (val) {
   return val !== val // eslint-disable-line no-self-compare
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39)))
 
 /***/ }),
 /* 11 */
@@ -11038,7 +11038,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 var _prodInvariant = __webpack_require__(55);
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 
 var invariant = __webpack_require__(11);
 var warning = __webpack_require__(12);
@@ -12007,13 +12007,228 @@ module.exports = React;
 
 /***/ }),
 /* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.addProjectEvent = exports.addProjectMessage = exports.addProjectTodos = exports.startGetProjectTodos = exports.startAddProjectTodo = exports.startUpdateProjectTodo = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProjects = exports.startGetProjects = exports.addProject = exports.startAddProject = exports.logout = exports.login = exports.startLogout = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _firebase = __webpack_require__(191);
+
+var _firebase2 = _interopRequireDefault(_firebase);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// --- Login and Logout Actions
+var startGithubLogin = exports.startGithubLogin = function startGithubLogin() {
+    return function (dispatch, getState) {
+        return _firebase2.default.auth().signInWithPopup(_firebase.githubProvider).then(function (result) {
+            console.log('Auth worked!', result);
+        }, function (error) {
+            console.log('Unable to auth', error);
+        });
+    };
+};
+
+var startGoogleLogin = exports.startGoogleLogin = function startGoogleLogin() {
+    return function (dispatch, getState) {
+        return _firebase2.default.auth().signInWithPopup(_firebase.googleProvider).then(function (result) {
+            console.log('Auth worked!', result);
+        }, function (error) {
+            console.log('Unable to auth', error);
+        });
+    };
+};
+
+var startFacebookLogin = exports.startFacebookLogin = function startFacebookLogin() {
+    return function (dispatch, getState) {
+        return _firebase2.default.auth().signInWithPopup(_firebase.facebookProvider).then(function (result) {
+            console.log('Auth worked!', result);
+        }, function (error) {
+            console.log('Unable to auth', error);
+        });
+    };
+};
+
+var startLogout = exports.startLogout = function startLogout(uid) {
+    return function (dispatch, getState) {
+        return _firebase2.default.auth().signOut().then(function () {
+            _firebase2.default.database().ref('users/' + uid + '/projectsWhereOwner').off();
+            _firebase2.default.database().ref('projects').off();
+            console.log('logout successful');
+        });
+    };
+};
+
+var login = exports.login = function login(user) {
+    return {
+        type: 'LOGIN',
+        user: user
+    };
+};
+
+var logout = exports.logout = function logout() {
+    return {
+        type: 'LOGOUT'
+    };
+};
+// --- End of Login and Logout actions
+
+// --- Projects Actions
+var startAddProject = exports.startAddProject = function startAddProject(project) {
+    console.log('Starting Add Project');
+    return function (dispatch, getState) {
+        var uid = getState().auth.uid;
+        var projectToAdd = _extends({}, project, {
+            owner: uid
+        });
+        var projectRef = _firebase.firebaseRef.child('projects').push(projectToAdd);
+
+        var updates = {};
+        updates['/users/' + uid + '/projectsWhereOwner/' + projectRef.key] = true;
+
+        return _firebase.firebaseRef.update(updates);
+    };
+};
+
+var addProject = exports.addProject = function addProject(project) {
+    return {
+        type: 'ADD_PROJECT',
+        project: project
+    };
+};
+
+var startGetProjects = exports.startGetProjects = function startGetProjects() {
+    return function (dispatch, getState) {
+        var uid = getState().auth.uid;
+
+        var projectsRef = _firebase2.default.database().ref('projects').orderByChild("owner").equalTo(uid).on('value', function (snapshot) {
+            var projectsList = [];
+            var projects = snapshot.val() || {};
+            Object.keys(projects).forEach(function (projectId) {
+                projectsList.push(_extends({
+                    id: projectId
+                }, projects[projectId]));
+            });
+
+            dispatch(addProjects(projectsList));
+        });
+    };
+};
+
+var addProjects = exports.addProjects = function addProjects(projects) {
+    return {
+        type: 'ADD_PROJECTS',
+        projects: projects
+    };
+};
+
+// --- End of Projects Actions
+
+// --- Project Todos Actions
+var addProjectTodo = exports.addProjectTodo = function addProjectTodo(todo) {
+    return {
+        type: 'ADD_PROJECT_TODO',
+        todo: todo
+    };
+};
+
+var toggleProjectTodo = exports.toggleProjectTodo = function toggleProjectTodo(todoId) {
+    return {
+        type: 'TOGGLE_PROJECT_TODO',
+        todoId: todoId
+    };
+};
+
+var setProjectTodoDueDate = exports.setProjectTodoDueDate = function setProjectTodoDueDate(todoId, todoDueDate) {
+    return {
+        type: 'SET_PROJECT_TODO_DUE_DATE',
+        todoId: todoId,
+        todoDueDate: todoDueDate
+    };
+};
+
+var startUpdateProjectTodo = exports.startUpdateProjectTodo = function startUpdateProjectTodo(todoId, updates) {
+    return function (dispatch, getState) {
+        var todoRef = _firebase.firebaseRef.child('todos/' + todoId);
+
+        return todoRef.update(updates);
+    };
+};
+
+var startAddProjectTodo = exports.startAddProjectTodo = function startAddProjectTodo(todo) {
+    console.log('Start adding project todo');
+    return function (dispatch, getState) {
+        var uid = getState().auth.uid;
+
+        var todoRef = _firebase.firebaseRef.child('todos').push(todo);
+
+        var updates = {};
+        updates['/projects/' + todo.project + '/todos/' + todoRef.key] = true;
+
+        return _firebase.firebaseRef.update(updates);
+    };
+};
+
+var startGetProjectTodos = exports.startGetProjectTodos = function startGetProjectTodos(project) {
+    return function (dispatch, getState) {
+        console.log('starting getProjectTodos for project', project);
+
+        var projectTodosRef = _firebase2.default.database().ref('todos').orderByChild('project').equalTo(project).on('value', function (snapshot) {
+            var todosList = [];
+            var todos = snapshot.val() || {};
+            console.log(todos);
+            Object.keys(todos).forEach(function (todoId) {
+                todosList.push(_extends({
+                    id: todoId
+                }, todos[todoId]));
+            });
+
+            dispatch(addProjectTodos(todosList));
+        });
+    };
+};
+
+var addProjectTodos = exports.addProjectTodos = function addProjectTodos(todos) {
+    return {
+        type: 'ADD_PROJECT_TODOS',
+        todos: todos
+    };
+};
+
+// --- End of Project Todos Actions
+
+// Project Messages Actions
+var addProjectMessage = exports.addProjectMessage = function addProjectMessage(message) {
+    return {
+        type: 'ADD_PROJECT_MESSAGE',
+        message: message
+    };
+};
+
+//Project Events Actions
+var addProjectEvent = exports.addProjectEvent = function addProjectEvent(event) {
+    return {
+        type: 'ADD_PROJECT_EVENT',
+        event: event
+    };
+};
+
+/***/ }),
+/* 34 */
 /***/ (function(module, exports) {
 
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var store      = __webpack_require__(129)('wks')
@@ -12029,7 +12244,7 @@ var $exports = module.exports = function(name){
 $exports.store = store;
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -12148,7 +12363,7 @@ SafeAnchor.defaultProps = defaultProps;
 /* harmony default export */ __webpack_exports__["a"] = SafeAnchor;
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12422,7 +12637,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12458,7 +12673,7 @@ var ReactCurrentOwner = {
 module.exports = ReactCurrentOwner;
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, exports) {
 
 var g;
@@ -12485,218 +12700,11 @@ module.exports = g;
 
 
 /***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.addProjectEvent = exports.addProjectMessage = exports.addProjectTodos = exports.startGetProjectTodos = exports.startAddProjectTodo = exports.setProjectTodoDueDate = exports.toggleProjectTodo = exports.addProjectTodo = exports.addProjects = exports.startAddProjects = exports.addProject = exports.startAddProject = exports.logout = exports.login = exports.startLogout = exports.startFacebookLogin = exports.startGoogleLogin = exports.startGithubLogin = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _firebase = __webpack_require__(191);
-
-var _firebase2 = _interopRequireDefault(_firebase);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// --- Login and Logout Actions
-var startGithubLogin = exports.startGithubLogin = function startGithubLogin() {
-    return function (dispatch, getState) {
-        return _firebase2.default.auth().signInWithPopup(_firebase.githubProvider).then(function (result) {
-            console.log('Auth worked!', result);
-        }, function (error) {
-            console.log('Unable to auth', error);
-        });
-    };
-};
-
-var startGoogleLogin = exports.startGoogleLogin = function startGoogleLogin() {
-    return function (dispatch, getState) {
-        return _firebase2.default.auth().signInWithPopup(_firebase.googleProvider).then(function (result) {
-            console.log('Auth worked!', result);
-        }, function (error) {
-            console.log('Unable to auth', error);
-        });
-    };
-};
-
-var startFacebookLogin = exports.startFacebookLogin = function startFacebookLogin() {
-    return function (dispatch, getState) {
-        return _firebase2.default.auth().signInWithPopup(_firebase.facebookProvider).then(function (result) {
-            console.log('Auth worked!', result);
-        }, function (error) {
-            console.log('Unable to auth', error);
-        });
-    };
-};
-
-var startLogout = exports.startLogout = function startLogout(uid) {
-    return function (dispatch, getState) {
-        return _firebase2.default.auth().signOut().then(function () {
-            _firebase2.default.database().ref('users/' + uid + '/projectsWhereOwner').off();
-            _firebase2.default.database().ref('projects').off();
-            console.log('logout successful');
-        });
-    };
-};
-
-var login = exports.login = function login(user) {
-    return {
-        type: 'LOGIN',
-        user: user
-    };
-};
-
-var logout = exports.logout = function logout() {
-    return {
-        type: 'LOGOUT'
-    };
-};
-// --- End of Login and Logout actions
-
-// --- Projects Actions
-var startAddProject = exports.startAddProject = function startAddProject(project) {
-    console.log('Starting Add Project');
-    return function (dispatch, getState) {
-        var uid = getState().auth.uid;
-        var projectToAdd = _extends({}, project, {
-            owner: uid
-        });
-        var projectRef = _firebase.firebaseRef.child('projects').push(projectToAdd);
-
-        var updates = {};
-        updates['/users/' + uid + '/projectsWhereOwner/' + projectRef.key] = true;
-
-        return _firebase.firebaseRef.update(updates);
-    };
-};
-
-var addProject = exports.addProject = function addProject(project) {
-    return {
-        type: 'ADD_PROJECT',
-        project: project
-    };
-};
-
-var startAddProjects = exports.startAddProjects = function startAddProjects() {
-    return function (dispatch, getState) {
-        var uid = getState().auth.uid;
-
-        var projectsRef = _firebase2.default.database().ref('projects').orderByChild("owner").equalTo(uid).on('value', function (snapshot) {
-            var projectsList = [];
-            var projects = snapshot.val() || {};
-            Object.keys(projects).forEach(function (projectId) {
-                projectsList.push(_extends({
-                    id: projectId
-                }, projects[projectId]));
-            });
-
-            dispatch(addProjects(projectsList));
-        });
-    };
-};
-
-var addProjects = exports.addProjects = function addProjects(projects) {
-    return {
-        type: 'ADD_PROJECTS',
-        projects: projects
-    };
-};
-
-// --- End of Projects Actions
-
-// --- Project Todos Actions
-var addProjectTodo = exports.addProjectTodo = function addProjectTodo(todo) {
-    return {
-        type: 'ADD_PROJECT_TODO',
-        todo: todo
-    };
-};
-
-var toggleProjectTodo = exports.toggleProjectTodo = function toggleProjectTodo(todoId) {
-    return {
-        type: 'TOGGLE_PROJECT_TODO',
-        todoId: todoId
-    };
-};
-
-var setProjectTodoDueDate = exports.setProjectTodoDueDate = function setProjectTodoDueDate(todoId, todoDueDate) {
-    return {
-        type: 'SET_PROJECT_TODO_DUE_DATE',
-        todoId: todoId,
-        todoDueDate: todoDueDate
-    };
-};
-
-var startAddProjectTodo = exports.startAddProjectTodo = function startAddProjectTodo(todo) {
-    console.log('Start adding project todo');
-    return function (dispatch, getState) {
-        var uid = getState().auth.uid;
-
-        var todoRef = _firebase.firebaseRef.child('todos').push(todo);
-
-        var updates = {};
-        updates['/projects/' + todo.project + '/todos/' + todoRef.key] = true;
-
-        return _firebase.firebaseRef.update(updates);
-    };
-};
-
-var startGetProjectTodos = exports.startGetProjectTodos = function startGetProjectTodos(project) {
-    return function (dispatch, getState) {
-        console.log('starting getProjectTodos for project', project);
-
-        var projectTodosRef = _firebase2.default.database().ref('todos').orderByChild('project').equalTo(project).on('value', function (snapshot) {
-            var todosList = [];
-            var todos = snapshot.val() || {};
-            console.log(todos);
-            Object.keys(todos).forEach(function (todoId) {
-                todosList.push(_extends({
-                    id: todoId
-                }, todos[todoId]));
-            });
-
-            dispatch(addProjectTodos(todosList));
-        });
-    };
-};
-
-var addProjectTodos = exports.addProjectTodos = function addProjectTodos(todos) {
-    return {
-        type: 'ADD_PROJECT_TODOS',
-        todos: todos
-    };
-};
-
-// --- End of Project Todos Actions
-
-// Project Messages Actions
-var addProjectMessage = exports.addProjectMessage = function addProjectMessage(message) {
-    return {
-        type: 'ADD_PROJECT_MESSAGE',
-        message: message
-    };
-};
-
-//Project Events Actions
-var addProjectEvent = exports.addProjectEvent = function addProjectEvent(event) {
-    return {
-        type: 'ADD_PROJECT_EVENT',
-        event: event
-    };
-};
-
-/***/ }),
 /* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global    = __webpack_require__(41)
-  , core      = __webpack_require__(33)
+  , core      = __webpack_require__(34)
   , ctx       = __webpack_require__(121)
   , hide      = __webpack_require__(60)
   , PROTOTYPE = 'prototype';
@@ -13385,7 +13393,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "ResponsiveEmbed", function() { return __WEBPACK_IMPORTED_MODULE_53__ResponsiveEmbed__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_54__Row__ = __webpack_require__(667);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Row", function() { return __WEBPACK_IMPORTED_MODULE_54__Row__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_55__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_55__SafeAnchor__ = __webpack_require__(36);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "SafeAnchor", function() { return __WEBPACK_IMPORTED_MODULE_55__SafeAnchor__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_56__SplitButton__ = __webpack_require__(668);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "SplitButton", function() { return __WEBPACK_IMPORTED_MODULE_56__SplitButton__["a"]; });
@@ -13855,7 +13863,7 @@ module.exports = ReactReconciler;
 
 var _assign = __webpack_require__(15);
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 
 var warning = __webpack_require__(12);
 var canDefineProperty = __webpack_require__(181);
@@ -16385,7 +16393,7 @@ function randomBytes (size, cb) {
   return bytes
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38), __webpack_require__(10).Buffer, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39), __webpack_require__(10).Buffer, __webpack_require__(1)))
 
 /***/ }),
 /* 87 */
@@ -16412,7 +16420,7 @@ function randomBytes (size, cb) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_react_prop_types_lib_elementType___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_react_prop_types_lib_elementType__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__utils_StyleConfig__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__SafeAnchor__ = __webpack_require__(36);
 
 
 
@@ -17119,7 +17127,7 @@ module.exports = ReactBrowserEventEmitter;
 
 
 
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 var getEventTarget = __webpack_require__(167);
 
@@ -19776,7 +19784,7 @@ exports.f = Object.getOwnPropertySymbols;
 
 var def = __webpack_require__(48).f
   , has = __webpack_require__(47)
-  , TAG = __webpack_require__(34)('toStringTag');
+  , TAG = __webpack_require__(35)('toStringTag');
 
 module.exports = function(it, tag, stat){
   if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
@@ -19846,7 +19854,7 @@ module.exports = function(it, S){
 /***/ (function(module, exports, __webpack_require__) {
 
 var global         = __webpack_require__(41)
-  , core           = __webpack_require__(33)
+  , core           = __webpack_require__(34)
   , LIBRARY        = __webpack_require__(124)
   , wksExt         = __webpack_require__(134)
   , defineProperty = __webpack_require__(48).f;
@@ -19859,7 +19867,7 @@ module.exports = function(name){
 /* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.f = __webpack_require__(34);
+exports.f = __webpack_require__(35);
 
 /***/ }),
 /* 135 */
@@ -20039,7 +20047,7 @@ exports.allocUnsafeSlow = function allocUnsafeSlow(size) {
   return new SlowBuffer(size);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39)))
 
 /***/ }),
 /* 138 */
@@ -20279,7 +20287,7 @@ firebase.SDK_VERSION = "3.7.4";
 return firebase;}).call(typeof global !== undefined ? global : typeof self !== undefined ? self : typeof window !== undefined ? window : {});
 module.exports = firebase;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39)))
 
 /***/ }),
 /* 143 */
@@ -22615,7 +22623,7 @@ module.exports = ReactErrorUtils;
 
 var _prodInvariant = __webpack_require__(14);
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var ReactInstanceMap = __webpack_require__(71);
 var ReactInstrumentation = __webpack_require__(30);
 var ReactUpdates = __webpack_require__(31);
@@ -26196,7 +26204,7 @@ var LIBRARY        = __webpack_require__(124)
   , $iterCreate    = __webpack_require__(486)
   , setToStringTag = __webpack_require__(127)
   , getPrototypeOf = __webpack_require__(494)
-  , ITERATOR       = __webpack_require__(34)('iterator')
+  , ITERATOR       = __webpack_require__(35)('iterator')
   , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
   , FF_ITERATOR    = '@@iterator'
   , KEYS           = 'keys'
@@ -38670,7 +38678,7 @@ module.exports = __webpack_require__(782);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_classnames___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_classnames__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(36);
 
 
 
@@ -39009,7 +39017,7 @@ CarouselItem.defaultProps = defaultProps;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_classnames__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_classnames___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_classnames__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Button__ = __webpack_require__(87);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SafeAnchor__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__ = __webpack_require__(9);
 
 
@@ -40061,7 +40069,7 @@ Nav.contextTypes = contextTypes;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_classnames___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_classnames__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_createChainedFunction__ = __webpack_require__(22);
 
 
@@ -40395,7 +40403,7 @@ Overlay.defaultProps = defaultProps;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_classnames___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_classnames__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_createChainedFunction__ = __webpack_require__(22);
 
 
@@ -41485,7 +41493,7 @@ var _prodInvariant = __webpack_require__(14),
 
 var React = __webpack_require__(32);
 var ReactComponentEnvironment = __webpack_require__(160);
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var ReactErrorUtils = __webpack_require__(162);
 var ReactInstanceMap = __webpack_require__(71);
 var ReactInstrumentation = __webpack_require__(30);
@@ -43346,7 +43354,7 @@ var DOMLazyTree = __webpack_require__(68);
 var DOMProperty = __webpack_require__(45);
 var React = __webpack_require__(32);
 var ReactBrowserEventEmitter = __webpack_require__(89);
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var ReactDOMComponentTree = __webpack_require__(17);
 var ReactDOMContainerInfo = __webpack_require__(694);
 var ReactDOMFeatureFlags = __webpack_require__(696);
@@ -44050,7 +44058,7 @@ module.exports = accumulateInto;
 
 var _prodInvariant = __webpack_require__(14);
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var ReactDOMComponentTree = __webpack_require__(17);
 var ReactInstanceMap = __webpack_require__(71);
 
@@ -44604,7 +44612,7 @@ module.exports = setTextContent;
 
 var _prodInvariant = __webpack_require__(14);
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var REACT_ELEMENT_TYPE = __webpack_require__(708);
 
 var getIteratorFn = __webpack_require__(744);
@@ -46653,7 +46661,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var ReactComponentTreeHook = __webpack_require__(25);
 var ReactElement = __webpack_require__(54);
 
@@ -46954,7 +46962,7 @@ module.exports = onlyChild;
 
 var _prodInvariant = __webpack_require__(55);
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var REACT_ELEMENT_TYPE = __webpack_require__(412);
 
 var getIteratorFn = __webpack_require__(182);
@@ -48940,7 +48948,7 @@ var _ProjectEvents = __webpack_require__(446);
 
 var _ProjectEvents2 = _interopRequireDefault(_ProjectEvents);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -48957,7 +48965,7 @@ var store = __webpack_require__(462).configure();
 _index2.default.auth().onAuthStateChanged(function (user) {
     if (user) {
         store.dispatch(actions.login(user));
-        store.dispatch(actions.startAddProjects());
+        store.dispatch(actions.startGetProjects());
         _reactRouter.browserHistory.push('/');
     } else {
         store.dispatch(actions.logout());
@@ -50017,7 +50025,7 @@ var _reactAddonsCssTransitionGroup = __webpack_require__(348);
 
 var _reactAddonsCssTransitionGroup2 = _interopRequireDefault(_reactAddonsCssTransitionGroup);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -50183,7 +50191,7 @@ var _moment = __webpack_require__(2);
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -50322,7 +50330,7 @@ var _moment = __webpack_require__(2);
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -50456,7 +50464,7 @@ var _reactRedux = __webpack_require__(24);
 
 var _reactBootstrap = __webpack_require__(51);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -50565,7 +50573,7 @@ var _reactBootstrap = __webpack_require__(51);
 
 var _reactRedux = __webpack_require__(24);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -50770,7 +50778,7 @@ var _reactRouter = __webpack_require__(73);
 
 var _reactRedux = __webpack_require__(24);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -51183,7 +51191,7 @@ var _ProjectListItem = __webpack_require__(449);
 
 var _ProjectListItem2 = _interopRequireDefault(_ProjectListItem);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -51208,13 +51216,6 @@ var ProjectList = function (_Component) {
 
     _createClass(ProjectList, [{
         key: 'render',
-
-        // componentWillMount() {
-        //     var {dispatch} = this.props;
-
-        //     dispatch(actions.startAddProjects());
-        // }
-
         value: function render() {
             var projects = this.props.projects;
 
@@ -51688,7 +51689,7 @@ var _moment = __webpack_require__(2);
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -51736,7 +51737,11 @@ var ProjectTodoItem = function (_Component) {
                 var dueDate = (0, _moment2.default)(_this.projectTodoDueDate.valueAsDate).unix();
             }
 
-            dispatch(actions.setProjectTodoDueDate(id, dueDate));
+            var updates = {
+                dueDate: dueDate
+            };
+
+            dispatch(actions.startUpdateProjectTodo(id, updates));
         };
 
         _this.handleClearDueDate = function (e) {
@@ -51745,7 +51750,7 @@ var ProjectTodoItem = function (_Component) {
                 dispatch = _this$props3.dispatch;
 
             e.preventDefault();
-            dispatch(actions.setProjectTodoDueDate(id, null));
+            dispatch(actions.startUpdateProjectTodo(id, { dueDate: null }));
         };
 
         _this.state = {
@@ -51850,7 +51855,7 @@ var ProjectTodoItem = function (_Component) {
                     _react2.default.createElement(
                         'span',
                         { className: renderDueDateClasses() },
-                        dueDate === null ? ' - No Due Date' : ' - Due at ' + _moment2.default.unix(dueDate).utc().format('DD/MM/YYYY')
+                        dueDate === undefined ? ' - No Due Date' : ' - Due at ' + _moment2.default.unix(dueDate).utc().format('DD/MM/YYYY')
                     )
                 ),
                 renderProjectTodoExpanded()
@@ -52036,7 +52041,7 @@ var _ProjectTodoItem = __webpack_require__(455);
 
 var _ProjectTodoItem2 = _interopRequireDefault(_ProjectTodoItem);
 
-var _actions = __webpack_require__(39);
+var _actions = __webpack_require__(33);
 
 var actions = _interopRequireWildcard(_actions);
 
@@ -52080,7 +52085,7 @@ var ProjectTodosList = function (_Component) {
         key: 'render',
         value: function render() {
             var todos = this.props.todos;
-            // var filteredTodos = filterItems(todos, this.props.id);        
+
 
             var renderProjectTodoList = function renderProjectTodoList() {
                 if (todos.length === 0) {
@@ -52527,21 +52532,21 @@ module.exports = { "default": __webpack_require__(475), __esModule: true };
 
 __webpack_require__(204);
 __webpack_require__(499);
-module.exports = __webpack_require__(33).Array.from;
+module.exports = __webpack_require__(34).Array.from;
 
 /***/ }),
 /* 469 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(501);
-module.exports = __webpack_require__(33).Object.assign;
+module.exports = __webpack_require__(34).Object.assign;
 
 /***/ }),
 /* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(502);
-var $Object = __webpack_require__(33).Object;
+var $Object = __webpack_require__(34).Object;
 module.exports = function create(P, D){
   return $Object.create(P, D);
 };
@@ -52551,21 +52556,21 @@ module.exports = function create(P, D){
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(506);
-module.exports = __webpack_require__(33).Object.entries;
+module.exports = __webpack_require__(34).Object.entries;
 
 /***/ }),
 /* 472 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(503);
-module.exports = __webpack_require__(33).Object.setPrototypeOf;
+module.exports = __webpack_require__(34).Object.setPrototypeOf;
 
 /***/ }),
 /* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(507);
-module.exports = __webpack_require__(33).Object.values;
+module.exports = __webpack_require__(34).Object.values;
 
 /***/ }),
 /* 474 */
@@ -52575,7 +52580,7 @@ __webpack_require__(505);
 __webpack_require__(504);
 __webpack_require__(508);
 __webpack_require__(509);
-module.exports = __webpack_require__(33).Symbol;
+module.exports = __webpack_require__(34).Symbol;
 
 /***/ }),
 /* 475 */
@@ -52632,7 +52637,7 @@ module.exports = function(IS_INCLUDES){
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = __webpack_require__(120)
-  , TAG = __webpack_require__(34)('toStringTag')
+  , TAG = __webpack_require__(35)('toStringTag')
   // ES3 wrong here
   , ARG = cof(function(){ return arguments; }()) == 'Arguments';
 
@@ -52700,7 +52705,7 @@ module.exports = __webpack_require__(41).document && document.documentElement;
 
 // check on default Array iterator
 var Iterators  = __webpack_require__(80)
-  , ITERATOR   = __webpack_require__(34)('iterator')
+  , ITERATOR   = __webpack_require__(35)('iterator')
   , ArrayProto = Array.prototype;
 
 module.exports = function(it){
@@ -52746,7 +52751,7 @@ var create         = __webpack_require__(125)
   , IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(60)(IteratorPrototype, __webpack_require__(34)('iterator'), function(){ return this; });
+__webpack_require__(60)(IteratorPrototype, __webpack_require__(35)('iterator'), function(){ return this; });
 
 module.exports = function(Constructor, NAME, next){
   Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
@@ -52757,7 +52762,7 @@ module.exports = function(Constructor, NAME, next){
 /* 487 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ITERATOR     = __webpack_require__(34)('iterator')
+var ITERATOR     = __webpack_require__(35)('iterator')
   , SAFE_CLOSING = false;
 
 try {
@@ -53029,9 +53034,9 @@ module.exports = function(index, length){
 /***/ (function(module, exports, __webpack_require__) {
 
 var classof   = __webpack_require__(479)
-  , ITERATOR  = __webpack_require__(34)('iterator')
+  , ITERATOR  = __webpack_require__(35)('iterator')
   , Iterators = __webpack_require__(80);
-module.exports = __webpack_require__(33).getIteratorMethod = function(it){
+module.exports = __webpack_require__(34).getIteratorMethod = function(it){
   if(it != undefined)return it[ITERATOR]
     || it['@@iterator']
     || Iterators[classof(it)];
@@ -53169,7 +53174,7 @@ var global         = __webpack_require__(41)
   , shared         = __webpack_require__(129)
   , setToStringTag = __webpack_require__(127)
   , uid            = __webpack_require__(95)
-  , wks            = __webpack_require__(34)
+  , wks            = __webpack_require__(35)
   , wksExt         = __webpack_require__(134)
   , wksDefine      = __webpack_require__(133)
   , keyOf          = __webpack_require__(489)
@@ -53441,7 +53446,7 @@ __webpack_require__(500);
 var global        = __webpack_require__(41)
   , hide          = __webpack_require__(60)
   , Iterators     = __webpack_require__(80)
-  , TO_STRING_TAG = __webpack_require__(34)('toStringTag');
+  , TO_STRING_TAG = __webpack_require__(35)('toStringTag');
 
 for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
   var NAME       = collections[i]
@@ -61612,7 +61617,7 @@ c){if("create"===a)try{c.auth()}catch(d){}});firebase.INTERNAL.extendNamespace({
 }).call(typeof global !== undefined ? global : typeof self !== undefined ? self : typeof window !== undefined ? window : {});
 module.exports = firebase.auth;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39)))
 
 /***/ }),
 /* 581 */
@@ -61882,7 +61887,7 @@ d;return d.Ya},{Reference:U,Query:X,Database:Pg,enableLogging:Sb,INTERNAL:Z,TEST
 }).call(typeof global !== undefined ? global : typeof self !== undefined ? self : typeof window !== undefined ? window : {});
 module.exports = firebase.database;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39)))
 
 /***/ }),
 /* 582 */
@@ -63940,7 +63945,7 @@ var freeGlobal = typeof global == 'object' && global && global.Object === Object
 
 /* harmony default export */ __webpack_exports__["a"] = freeGlobal;
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(39)))
 
 /***/ }),
 /* 598 */
@@ -65656,7 +65661,7 @@ var ButtonToolbar = function (_React$Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__CarouselCaption__ = __webpack_require__(622);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__CarouselItem__ = __webpack_require__(351);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Glyphicon__ = __webpack_require__(151);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__SafeAnchor__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__utils_bootstrapUtils__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__utils_ValidComponentChildren__ = __webpack_require__(28);
 
@@ -68614,7 +68619,7 @@ MediaRight.propTypes = propTypes;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_prop_types_lib_all__ = __webpack_require__(115);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_prop_types_lib_all___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_react_prop_types_lib_all__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SafeAnchor__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__utils_bootstrapUtils__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__utils_createChainedFunction__ = __webpack_require__(22);
 
@@ -70673,7 +70678,7 @@ Pagination.defaultProps = defaultProps;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_prop_types_lib_elementType__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_react_prop_types_lib_elementType___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_react_prop_types_lib_elementType__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__SafeAnchor__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__utils_createChainedFunction__ = __webpack_require__(22);
 
 
@@ -72205,7 +72210,7 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_12__utils_bootstrapUtils__["bsCl
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_classnames___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_classnames__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SafeAnchor__ = __webpack_require__(36);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_bootstrapUtils__ = __webpack_require__(9);
 
 
@@ -73486,7 +73491,7 @@ var EventPropagators = __webpack_require__(70);
 var ExecutionEnvironment = __webpack_require__(20);
 var ReactDOMComponentTree = __webpack_require__(17);
 var ReactUpdates = __webpack_require__(31);
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 var getEventTarget = __webpack_require__(167);
 var isEventSupported = __webpack_require__(168);
@@ -77632,7 +77637,7 @@ var ReactComponentEnvironment = __webpack_require__(160);
 var ReactInstanceMap = __webpack_require__(71);
 var ReactInstrumentation = __webpack_require__(30);
 
-var ReactCurrentOwner = __webpack_require__(37);
+var ReactCurrentOwner = __webpack_require__(38);
 var ReactReconciler = __webpack_require__(53);
 var ReactChildReconciler = __webpack_require__(691);
 
@@ -79393,7 +79398,7 @@ var ReactDOMComponentTree = __webpack_require__(17);
 var ReactBrowserEventEmitter = __webpack_require__(89);
 var ReactInstanceMap = __webpack_require__(71);
 var ReactUpdates = __webpack_require__(31);
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 var ReactShallowRenderer = __webpack_require__(723);
 
 var findDOMNode = __webpack_require__(384);
@@ -80128,7 +80133,7 @@ var EventPropagators = __webpack_require__(70);
 var ExecutionEnvironment = __webpack_require__(20);
 var ReactDOMComponentTree = __webpack_require__(17);
 var ReactInputSelection = __webpack_require__(378);
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 var getActiveElement = __webpack_require__(227);
 var isTextInputElement = __webpack_require__(391);
@@ -80328,7 +80333,7 @@ var EventPropagators = __webpack_require__(70);
 var ReactDOMComponentTree = __webpack_require__(17);
 var SyntheticAnimationEvent = __webpack_require__(729);
 var SyntheticClipboardEvent = __webpack_require__(730);
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 var SyntheticFocusEvent = __webpack_require__(733);
 var SyntheticKeyboardEvent = __webpack_require__(735);
 var SyntheticMouseEvent = __webpack_require__(111);
@@ -80554,7 +80559,7 @@ module.exports = SimpleEventPlugin;
 
 
 
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 /**
  * @interface Event
@@ -80598,7 +80603,7 @@ module.exports = SyntheticAnimationEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 /**
  * @interface Event
@@ -80641,7 +80646,7 @@ module.exports = SyntheticClipboardEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 /**
  * @interface Event
@@ -80764,7 +80769,7 @@ module.exports = SyntheticFocusEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 /**
  * @interface Event
@@ -80945,7 +80950,7 @@ module.exports = SyntheticTouchEvent;
 
 
 
-var SyntheticEvent = __webpack_require__(36);
+var SyntheticEvent = __webpack_require__(37);
 
 /**
  * @interface Event
@@ -88380,7 +88385,7 @@ module.exports = ripemd160
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38), __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39), __webpack_require__(1)))
 
 /***/ }),
 /* 807 */
@@ -89062,7 +89067,7 @@ if (typeof self !== 'undefined') {
 
 var result = (0, _ponyfill2['default'])(root);
 exports['default'] = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38), __webpack_require__(186)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39), __webpack_require__(186)(module)))
 
 /***/ }),
 /* 817 */
@@ -89517,7 +89522,7 @@ function config (name) {
   return String(val).toLowerCase() === 'true';
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39)))
 
 /***/ }),
 /* 822 */
