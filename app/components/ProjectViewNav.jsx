@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router';
 
+import ProjectViewNavCard from './ProjectViewNavCard.jsx';
+
 class ProjectViewNav extends Component {
 
 
@@ -11,39 +13,19 @@ class ProjectViewNav extends Component {
         return (
             <div className="row row-project-nav">
                 <div className="col-sm-2">
-                    <div className="sm-card-projectview">
-                        <Link to={baseLink}>
-                            <p>Dashboard</p>
-                        </Link>
-                    </div>
+                    <ProjectViewNavCard baseLink={baseLink} itemLink={"/"} cardText={"Dashboard"}/>
                 </div>
                 <div className="col-sm-2">
-                    <div className="sm-card-projectview">
-                        <Link to={baseLink + "/todos"}>
-                            <p>Todos</p>
-                        </Link>
-                    </div>
+                    <ProjectViewNavCard baseLink={baseLink} itemLink={"/todos"} cardText={"To-Dos"}/>
                 </div>
                 <div className="col-sm-2">
-                    <div className="sm-card-projectview">
-                        <Link to={baseLink + "/messageboard"}>
-                            <p>Message Board</p>
-                        </Link>
-                    </div>
+                    <ProjectViewNavCard baseLink={baseLink} itemLink={"/messageboard"} cardText={"Message Board"}/>
                 </div>
                 <div className="col-sm-2">
-                    <div className="sm-card-projectview">
-                        <Link to={baseLink + "/events"}>
-                            <p>Events</p>
-                        </Link>
-                    </div>
+                    <ProjectViewNavCard baseLink={baseLink} itemLink={"/events"} cardText={"Events"}/>
                 </div>                    
                 <div className="col-sm-2">
-                    <div className="sm-card-projectview">
-                        <Link to={baseLink + "/members"}>
-                            <p>Project Members</p>
-                        </Link>
-                    </div>
+                    <ProjectViewNavCard baseLink={baseLink} itemLink={"/members"} cardText={"Members"}/>                    
                 </div>
             </div>
         );

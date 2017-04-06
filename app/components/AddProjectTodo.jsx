@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
 import {Button, FormGroup, FormControl, Form} from 'react-bootstrap';
-var uuid = require('node-uuid');
+import {connect} from 'react-redux';
 
 import * as actions from '../actions/actions.jsx';
 
@@ -26,7 +25,7 @@ class AddProjectTodo extends Component {
     render() {
         return (
             <div>                                
-                <Form inline onSubmit={this.handleAddProjectTodo}>
+                <Form inline onSubmit={this.handleAddProjectTodo} className="form-inline-1-item">
                     <FormGroup>
                         <FormControl
                             type="text"                                

@@ -8,11 +8,18 @@
 @import "components/ProjectTodoItem";
 @import "components/ProjectTodos";
 @import "components/AddProjectTodo";
+@import "components/AddProjectMember";
 @import "components/ProjectMessagesList";
 @import "components/ProjectMessage";
 @import "components/ProjectEvents";
 @import "components/ProjectEventsList";
 @import "components/ProjectEvent";
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
 
 body {
     background-color: $background-bright;
@@ -42,4 +49,22 @@ body {
 
 .main-container {
     margin-top: 70px;
+}
+
+.form-inline-1-item { 
+    .form-group {
+        width: 100%;
+        margin-bottom: 30px;
+        input {
+            width: 65%;
+            margin-right: 5%;
+        }
+        button {
+            width: 30%;
+        }
+    }
+
+    
+
+    
 }

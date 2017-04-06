@@ -12,6 +12,7 @@ import ProjectTodos from './components/ProjectTodos.jsx';
 import ProjectPanel from './components/ProjectPanel.jsx';
 import ProjectMessageBoard from './components/ProjectMessageBoard.jsx';
 import ProjectEvents from './components/ProjectEvents.jsx';
+import ProjectMembers from './components/ProjectMembers.jsx';
 var store = require('./store/configureStore.jsx').configure();
 
 import * as actions from './actions/actions.jsx';
@@ -40,6 +41,7 @@ ReactDOM.render(
                     <Route path='/projects/:id/todos' component={ProjectTodos} />
                     <Route path='/projects/:id/messageboard' component={ProjectMessageBoard} />
                     <Route path='/projects/:id/events' component={ProjectEvents} />
+                    <Route path='/projects/:id/members' component={ProjectMembers} />
                     <IndexRoute component={ProjectPanel} />                    
                 </Route>
                 <Route path="/login" component={Login} />

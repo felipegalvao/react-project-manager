@@ -9,7 +9,7 @@ class ProjectTodos extends Component {
         return (
             <div>
                 <div className="row row-project-todos">
-                    <div className="col-sm-6 col-sm-offset-3 col-todos col-project-area">
+                    <div className="col-sm-8 col-sm-offset-2 col-todos col-project-area">
                         <h3>Project Todos</h3>
                         <AddProjectTodo id={this.props.params.id} />
                         <ProjectTodosList id={this.props.params.id} />
