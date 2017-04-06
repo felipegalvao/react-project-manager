@@ -15,8 +15,19 @@ class ProjectTodoItem extends Component {
     }
 
     handleToggleTodo = () => {
-        var {id, dispatch} = this.props;
-        dispatch(actions.toggleProjectTodo(id))
+        var {id, completed, dispatch} = this.props;
+
+        if (completed === undefined || completed === false) {
+            var updates = {
+                completed: true
+            };
+        } else {
+            var updates = {
+                completed: false
+            };
+        }        
+
+        dispatch(actions.startUpdateProjectTodo(id, updates));
     }
 
     handleShowHideTodoExpanded = () => {

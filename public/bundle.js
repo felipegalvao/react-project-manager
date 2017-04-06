@@ -51714,9 +51714,21 @@ var ProjectTodoItem = function (_Component) {
         _this.handleToggleTodo = function () {
             var _this$props = _this.props,
                 id = _this$props.id,
+                completed = _this$props.completed,
                 dispatch = _this$props.dispatch;
 
-            dispatch(actions.toggleProjectTodo(id));
+
+            if (completed === undefined || completed === false) {
+                var updates = {
+                    completed: true
+                };
+            } else {
+                var updates = {
+                    completed: false
+                };
+            }
+
+            dispatch(actions.startUpdateProjectTodo(id, updates));
         };
 
         _this.handleShowHideTodoExpanded = function () {
